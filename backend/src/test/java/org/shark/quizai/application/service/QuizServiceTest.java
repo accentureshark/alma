@@ -1,5 +1,5 @@
 
-package org.shark.quizai.application.service;
+package org.shark.alma.application.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,11 +8,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.shark.quizai.domain.model.QuizDefinition;
-import org.shark.quizai.domain.model.QuizDefinitionEntity;
-import org.shark.quizai.domain.model.QuizResponseRequest;
-import org.shark.quizai.domain.port.out.InferenceClient;
-import org.shark.quizai.domain.port.out.QuizRepository;
+import org.shark.alma.domain.model.QuizDefinition;
+import org.shark.alma.domain.model.QuizDefinitionEntity;
+import org.shark.alma.domain.model.QuizResponseRequest;
+import org.shark.alma.domain.port.out.InferenceClient;
+import org.shark.alma.domain.port.out.QuizRepository;
+import org.shark.alma.llm.LlmService;
 
 import java.sql.Timestamp;
 import java.util.*;
@@ -29,6 +30,9 @@ class QuizServiceTest {
 
     @Mock
     private InferenceClient inferenceClient;
+
+    @Mock
+    private LlmService llmService;
 
     @InjectMocks
     private QuizService quizService;
@@ -216,5 +220,66 @@ class QuizServiceTest {
                         "Proporciona feedback detallado".equals(request.getCustomPrompt()) &&
                         request.getRespuestas().size() == 2
         ));
+    }
+
+    @Test
+    void processResponseWithLlm_ShouldCallLlmServiceWithCorrectContext() {
+        // Arrange
+        when(quizRepository.findByDocumentId("quiz-123")).thenReturn(Optional.of(testQuizEntity));
+        String expectedLlmResponse = "Análisis: Respuesta correcta en geografía. Excelente conocimiento de capitales europeas y océanos.";
+        when(llmService.generate(any(String.class), any(String.class))).thenReturn(expectedLlmResponse);
+
+        // Act
+        String result = quizService.processResponseWithLlm(testQuizResponse);
+
+        // Assert
+        assertEquals(expectedLlmResponse, result);
+        verify(llmService, times(1)).generate(any(String.class), any(String.class));
+        verify(quizRepository, times(1)).findByDocumentId("quiz-123");
+    }
+
+    @Test
+    void processResponseWithLlm_WithCustomPrompt_ShouldUseCustomPrompt() {
+        // Arrange
+        when(quizRepository.findByDocumentId("quiz-123")).thenReturn(Optional.of(testQuizEntity));
+        String customPrompt = "Analiza las respuestas en detalle y proporciona sugerencias específicas";
+        testQuizResponse.setCustomPrompt(customPrompt);
+        String expectedLlmResponse = "Análisis detallado con sugerencias específicas.";
+        when(llmService.generate(eq(customPrompt), any(String.class))).thenReturn(expectedLlmResponse);
+
+        // Act
+        String result = quizService.processResponseWithLlm(testQuizResponse);
+
+        // Assert
+        assertEquals(expectedLlmResponse, result);
+        verify(llmService, times(1)).generate(eq(customPrompt), any(String.class));
+    }
+
+    @Test
+    void processResponseWithLlm_WithNullCustomPrompt_ShouldUseDefaultPrompt() {
+        // Arrange
+        when(quizRepository.findByDocumentId("quiz-123")).thenReturn(Optional.of(testQuizEntity));
+        testQuizResponse.setCustomPrompt(null);
+        String expectedLlmResponse = "Análisis general de las respuestas.";
+        String expectedDefaultPrompt = "Analiza las respuestas del usuario al quiz y proporciona feedback constructivo. " +
+                "Evalúa la corrección de las respuestas y ofrece sugerencias de mejora cuando sea necesario.";
+        when(llmService.generate(eq(expectedDefaultPrompt), any(String.class))).thenReturn(expectedLlmResponse);
+
+        // Act
+        String result = quizService.processResponseWithLlm(testQuizResponse);
+
+        // Assert
+        assertEquals(expectedLlmResponse, result);
+        verify(llmService, times(1)).generate(eq(expectedDefaultPrompt), any(String.class));
+    }
+
+    @Test
+    void processResponseWithLlm_WhenQuizNotFound_ShouldThrowException() {
+        // Arrange
+        when(quizRepository.findByDocumentId("quiz-123")).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(Exception.class, () -> quizService.processResponseWithLlm(testQuizResponse));
+        verify(llmService, never()).generate(any(String.class), any(String.class));
     }
 }

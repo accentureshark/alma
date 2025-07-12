@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Splitter, SplitterPanel } from 'primereact/splitter';
 import { Dialog } from 'primereact/dialog';
+import { InputTextarea } from 'primereact/inputtextarea';
+import { Divider } from 'primereact/divider';
 import { Header } from '../components/layout/Header';
 import { CustomButton } from '../components/ui/CustomButton';
 import { TextareaField } from '../components/ui/TextareaField';
@@ -38,6 +40,10 @@ const QuizTaker = () => {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [allQuestionsAnswered, setAllQuestionsAnswered] = useState(false);
+  const [customPrompt, setCustomPrompt] = useState('');
+  const [llmResponse, setLlmResponse] = useState('');
+  const [isProcessingLlm, setIsProcessingLlm] = useState(false);
+  const [showLlmResult, setShowLlmResult] = useState(false);
 
   useEffect(() => {
     // Intenta cargar el quiz desde el backend
@@ -102,13 +108,47 @@ const QuizTaker = () => {
     }
   };
 
-  const handleSubmitQuiz = () => {
+  const handleSubmitQuiz = async () => {
+    setIsProcessingLlm(true);
+    try {
+      const baseUrl = import.meta.env.VITE_API_URL || '/api';
+      const requestData = {
+        documentId: quizId,
+        usuario: 'test-user', // En un sistema real, esto vendría de la autenticación
+        respuestas: answers,
+        customPrompt: customPrompt || 'Analiza las respuestas del usuario al quiz y proporciona feedback constructivo. Evalúa la corrección de las respuestas y ofrece sugerencias de mejora cuando sea necesario.'
+      };
+
+      const response = await fetch(`${baseUrl}/quiz/response/llm`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestData),
+      });
+
+      if (response.ok) {
+        const result = await response.text();
+        setLlmResponse(result);
+        setShowLlmResult(true);
+      } else {
+        throw new Error('Error al procesar la respuesta');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setLlmResponse('Error al procesar las respuestas. Por favor, intenta nuevamente.');
+      setShowLlmResult(true);
+    } finally {
+      setIsProcessingLlm(false);
+    }
     setShowCompletionModal(true);
-    // Aquí podrías enviar las respuestas al backend si lo deseas
   };
 
   const handleCloseModal = () => {
     setShowCompletionModal(false);
+    setShowLlmResult(false);
+    setLlmResponse('');
+    setCustomPrompt('');
     navigate('/user-dashboard');
   };
 
@@ -152,11 +192,11 @@ const QuizTaker = () => {
         )}
         {currentQuestionIndex === quiz.steps.length - 1 && (
             <CustomButton
-                label="Enviar"
-                icon="pi pi-check"
+                label={isProcessingLlm ? "Procesando..." : "Enviar"}
+                icon={isProcessingLlm ? "pi pi-spin pi-spinner" : "pi pi-check"}
                 onClick={handleSubmitQuiz}
                 className="p-button-success"
-                disabled={!allQuestionsAnswered}
+                disabled={!allQuestionsAnswered || isProcessingLlm}
             />
         )}
       </div>
@@ -217,6 +257,24 @@ const QuizTaker = () => {
                     </li>
                 ))}
               </ul>
+              
+              <Divider />
+              
+              <div className="custom-prompt-section">
+                <h4>Instrucciones personalizadas para el análisis</h4>
+                <InputTextarea
+                    value={customPrompt}
+                    onChange={(e) => setCustomPrompt(e.target.value)}
+                    rows={4}
+                    autoResize
+                    placeholder="Escribe instrucciones específicas para el análisis de tus respuestas (opcional)..."
+                    className="custom-prompt-textarea"
+                />
+                <small className="help-text">
+                  Si no especificas instrucciones, se realizará un análisis general de tus respuestas.
+                </small>
+              </div>
+              
               <div className="back-button-container">
                 <CustomButton
                     label="Volver al Dashboard"
@@ -239,11 +297,40 @@ const QuizTaker = () => {
                   onClick={handleCloseModal}
               />
             }
-            style={{ width: '30vw', minWidth: 300 }}
+            style={{ width: '60vw', minWidth: 400, maxWidth: 800 }}
             modal
         >
           <div style={{ padding: "1rem" }}>
             <p>¡Gracias por completar el quiz!</p>
+            
+            {showLlmResult && (
+              <div className="llm-response-section">
+                <Divider />
+                <h4>Análisis de tus respuestas:</h4>
+                <div className="llm-response-content" style={{
+                  background: '#f8f9fa',
+                  padding: '1rem',
+                  borderRadius: '8px',
+                  border: '1px solid #e9ecef',
+                  whiteSpace: 'pre-wrap',
+                  fontFamily: 'inherit',
+                  maxHeight: '400px',
+                  overflowY: 'auto'
+                }}>
+                  {llmResponse}
+                </div>
+              </div>
+            )}
+            
+            {isProcessingLlm && (
+              <div className="processing-section">
+                <Divider />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <i className="pi pi-spin pi-spinner" />
+                  <span>Analizando tus respuestas...</span>
+                </div>
+              </div>
+            )}
           </div>
         </Dialog>
       </div>

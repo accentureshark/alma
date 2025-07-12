@@ -1,8 +1,8 @@
-package org.shark.quizai.domain.port.out;
+package org.shark.alma.domain.port.out;
 
 
 
-import org.shark.quizai.domain.model.QuizResponseRequest;
+import org.shark.alma.domain.model.QuizResponseRequest;
 
 public interface InferenceClient {
     String inferResult(QuizResponseRequest request);

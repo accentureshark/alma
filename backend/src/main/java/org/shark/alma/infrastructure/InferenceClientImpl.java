@@ -1,9 +1,9 @@
-package org.shark.quizai.infrastructure;
+package org.shark.alma.infrastructure;
 
-import org.shark.quizai.infrastructure.dto.RagQueryRequest;
-import org.shark.quizai.infrastructure.dto.QueryResponse;
-import org.shark.quizai.domain.model.QuizResponseRequest;
-import org.shark.quizai.domain.port.out.InferenceClient;
+import org.shark.alma.infrastructure.dto.RagQueryRequest;
+import org.shark.alma.infrastructure.dto.QueryResponse;
+import org.shark.alma.domain.model.QuizResponseRequest;
+import org.shark.alma.domain.port.out.InferenceClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;

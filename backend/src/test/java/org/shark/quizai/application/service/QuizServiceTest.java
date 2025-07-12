@@ -19,6 +19,8 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -115,27 +117,27 @@ class QuizServiceTest {
     void processResponse_ShouldCallInferenceClientAndReturnResult() {
         // Arrange
         String expectedResult = "Respuestas correctas: 2/2. Excelente trabajo en geografía.";
-        when(inferenceClient.inferResult(any(QuizResponseRequest.class))).thenReturn(expectedResult);
+        when(inferenceClient.generateResponse(anyString())).thenReturn(expectedResult);
 
         // Act
         String result = quizService.processResponse(testQuizResponse);
 
         // Assert
         assertEquals(expectedResult, result);
-        verify(inferenceClient, times(1)).inferResult(testQuizResponse);
+        verify(inferenceClient, times(1)).generateResponse(anyString());
     }
 
     @Test
     void processResponse_WhenInferenceClientReturnsNull_ShouldReturnNull() {
         // Arrange
-        when(inferenceClient.inferResult(any(QuizResponseRequest.class))).thenReturn(null);
+        when(inferenceClient.generateResponse(anyString())).thenReturn(null);
 
         // Act
         String result = quizService.processResponse(testQuizResponse);
 
         // Assert
         assertNull(result);
-        verify(inferenceClient, times(1)).inferResult(testQuizResponse);
+        verify(inferenceClient, times(1)).generateResponse(anyString());
     }
 
     @Test
@@ -199,7 +201,7 @@ class QuizServiceTest {
     void processResponse_WithCompleteRequest_ShouldPassAllFieldsToInferenceClient() {
         // Arrange
         String expectedResult = "Análisis completo realizado";
-        when(inferenceClient.inferResult(any(QuizResponseRequest.class))).thenReturn(expectedResult);
+        when(inferenceClient.generateResponse(anyString())).thenReturn(expectedResult);
 
         // Act
         String result = quizService.processResponse(testQuizResponse);
@@ -207,14 +209,13 @@ class QuizServiceTest {
         // Assert
         assertEquals(expectedResult, result);
 
-        // Verificar que se llamó con el objeto correcto
-        verify(inferenceClient, times(1)).inferResult(argThat(request ->
-                "quiz-123".equals(request.getDocumentId()) &&
-                        "testUser".equals(request.getUsuario()) &&
-                        "Evalúa mis respuestas".equals(request.getQuery()) &&
-                        "conv-123".equals(request.getConversationId()) &&
-                        "Proporciona feedback detallado".equals(request.getCustomPrompt()) &&
-                        request.getRespuestas().size() == 2
+        // Verificar que se llamó con un prompt que contiene la información del request
+        verify(inferenceClient, times(1)).generateResponse(argThat(prompt ->
+                prompt.contains("testUser") &&
+                        prompt.contains("quiz-123") &&
+                        prompt.contains("Proporciona feedback detallado") &&
+                        prompt.contains("París") &&
+                        prompt.contains("Pacífico")
         ));
     }
 }

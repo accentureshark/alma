@@ -71,7 +71,24 @@ public class QuizService {
     }
 
     public String processResponse(QuizResponseRequest request) {
-        return inferenceClient.inferResult(request);
+        // Convert QuizResponseRequest to a text prompt
+        StringBuilder promptBuilder = new StringBuilder();
+        promptBuilder.append("Evalúa las siguientes respuestas del quiz:\n");
+        promptBuilder.append("Usuario: ").append(request.getUsuario()).append("\n");
+        promptBuilder.append("Documento ID: ").append(request.getDocumentId()).append("\n");
+        
+        if (request.getRespuestas() != null && !request.getRespuestas().isEmpty()) {
+            promptBuilder.append("Respuestas:\n");
+            request.getRespuestas().forEach((pregunta, respuesta) -> 
+                promptBuilder.append("- ").append(pregunta).append(": ").append(respuesta).append("\n")
+            );
+        }
+        
+        if (request.getCustomPrompt() != null && !request.getCustomPrompt().trim().isEmpty()) {
+            promptBuilder.append("\nInstrucciones adicionales: ").append(request.getCustomPrompt());
+        }
+        
+        return inferenceClient.generateResponse(promptBuilder.toString());
     }
 
     public List<String> listDocumentIds() {

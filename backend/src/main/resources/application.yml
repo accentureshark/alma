@@ -11,6 +11,12 @@ spring:
       maximum-pool-size: 5
       minimum-idle: 2
       pool-name: quiz-hikari-pool
+llm:
+  provider: ollama      # ollama | openai | localai | bedrock | ...
+  model: llama3         # el modelo a usar
+  api:
+    base-url: http://localhost:11434
+    key: ""             # solo necesario si el proveedor lo requiere
 
   jackson:
     serialization:

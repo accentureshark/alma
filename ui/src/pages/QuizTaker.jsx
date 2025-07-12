@@ -8,7 +8,7 @@ import { CustomButton } from '../components/ui/CustomButton';
 import { TextareaField } from '../components/ui/TextareaField';
 import { CustomCard } from '../components/ui/CustomCard';
 
-// Datos de ejemplo
+// Datos de ejemplo (pueden eliminarse si solo usas los del backend)
 const exampleQuizzes = [
   {
     documentId: '1',
@@ -40,62 +40,55 @@ const QuizTaker = () => {
   const [allQuestionsAnswered, setAllQuestionsAnswered] = useState(false);
 
   useEffect(() => {
-
-    const foundQuiz = exampleQuizzes.find((q) => q.documentId === quizId);
-    setQuiz(foundQuiz);
-
+    // Intenta cargar el quiz desde el backend
     const fetchQuiz = async () => {
       try {
-        const res = await fetch(`/api/quiz/${quizId}`);
-        const data = await res.json();
-        setQuiz(data);
-      } catch (err) {
-        console.error('Error loading quiz', err);
+        const baseUrl = import.meta.env.VITE_API_URL || '/api';
+        const res = await fetch(`${baseUrl}/quiz/${quizId}`);
+        if (res.ok) {
+          const data = await res.json();
+          setQuiz(data);
+        } else {
+          // Fallback a quizzes de ejemplo si no se encuentra en backend
+          const foundQuiz = exampleQuizzes.find((q) => q.documentId === quizId);
+          setQuiz(foundQuiz);
+        }
+      } catch (error) {
+        // Fallback a quizzes de ejemplo en caso de error
+        const foundQuiz = exampleQuizzes.find((q) => q.documentId === quizId);
+        setQuiz(foundQuiz);
       }
     };
     fetchQuiz();
   }, [quizId]);
 
   useEffect(() => {
-    if (quiz) {
-      const allAnswered = quiz.steps.every(
-
-        (s) => answers[s.id] && answers[s.id].trim() !== ''
-
-      );
-      setAllQuestionsAnswered(allAnswered);
-    }
+    if (!quiz) return;
+    // Check if all questions were answered
+    const allAnswered = quiz.steps.every(q => {
+      if (Array.isArray(q.opciones) && q.opciones.length > 0) {
+        return answers[q.id] && answers[q.id] !== '';
+      } else {
+        return answers[q.id] && answers[q.id].trim() !== '';
+      }
+    });
+    setAllQuestionsAnswered(allAnswered);
   }, [answers, quiz]);
 
   const handleAnswerChange = (e) => {
-    setAnswers({ ...answers, [currentQuestion.id]: e.target.value });
+    // Para radio: e.target.value, para textarea: e.target.value
+    const value = e.target.value;
+    const qid = quiz.steps[currentQuestionIndex].id;
+    setAnswers(prev => ({ ...prev, [qid]: value }));
   };
 
-  const handleQuestionTransition = (newIndex) => {
+  const handleQuestionTransition = (nextIdx) => {
     setIsTransitioning(true);
     setTimeout(() => {
-      setCurrentQuestionIndex(newIndex);
+      setCurrentQuestionIndex(nextIdx);
       setIsTransitioning(false);
-    }, 150);
+    }, 120);
   };
-
-  if (!quiz) {
-    return (
-      <div className="quiz-taker-page">
-        <Header />
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '50vh',
-          fontSize: '1.125rem',
-          color: 'var(--quiz-text-muted)'
-        }}>
-          Cargando quiz...
-        </div>
-      </div>
-    );
-  }
 
   const goToNextQuestion = () => {
     if (currentQuestionIndex < quiz.steps.length - 1) {
@@ -109,12 +102,9 @@ const QuizTaker = () => {
     }
   };
 
-  const currentQuestion = quiz.steps[currentQuestionIndex];
-
-
   const handleSubmitQuiz = () => {
     setShowCompletionModal(true);
-
+    // Aquí podrías enviar las respuestas al backend si lo deseas
   };
 
   const handleCloseModal = () => {
@@ -126,95 +116,137 @@ const QuizTaker = () => {
     navigate('/user-dashboard');
   };
 
+  if (!quiz) {
+    return (
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '50vh',
+          fontSize: '1.125rem',
+          color: 'var(--quiz-text-muted)'
+        }}>
+          Cargando quiz...
+        </div>
+    );
+  }
+
+  const currentQuestion = quiz.steps[currentQuestionIndex];
+
   const footer = (
-    <div className="navigation-buttons">
-      <CustomButton
-        label="Anterior"
-        icon="pi pi-arrow-left"
-        onClick={goToPreviousQuestion}
-        disabled={currentQuestionIndex === 0}
-        severity="secondary"
-      />
-      {currentQuestionIndex < quiz.steps.length - 1 && (
+      <div className="navigation-buttons">
         <CustomButton
-          label="Siguiente"
-          icon="pi pi-arrow-right"
-          iconPos="right"
-          onClick={goToNextQuestion}
+            label="Anterior"
+            icon="pi pi-arrow-left"
+            onClick={goToPreviousQuestion}
+            disabled={currentQuestionIndex === 0}
+            severity="secondary"
         />
-      )}
-      {currentQuestionIndex === quiz.steps.length - 1 && (
-        <CustomButton
-          label="Enviar"
-          icon="pi pi-check"
-          onClick={handleSubmitQuiz}
-          className="p-button-success"
-          disabled={!allQuestionsAnswered}
-        />
-      )}
-    </div>
+        {currentQuestionIndex < quiz.steps.length - 1 && (
+            <CustomButton
+                label="Siguiente"
+                icon="pi pi-arrow-right"
+                iconPos="right"
+                onClick={goToNextQuestion}
+            />
+        )}
+        {currentQuestionIndex === quiz.steps.length - 1 && (
+            <CustomButton
+                label="Enviar"
+                icon="pi pi-check"
+                onClick={handleSubmitQuiz}
+                className="p-button-success"
+                disabled={!allQuestionsAnswered}
+            />
+        )}
+      </div>
   );
 
   return (
-    <div className="quiz-taker-page">
-      <Header />
-      <Splitter className="quiz-taker-splitter">
-        <SplitterPanel className="question-panel" size={70}>
-          <CustomCard
-
-            title={quiz.tema}
-            subTitle={`Pregunta ${currentQuestionIndex + 1} de ${quiz.steps.length}`}
-            footer={footer}
-            className="question-card"
-          >
-            <div className={`question-transition ${isTransitioning ? 'changing' : ''}`}>
-              <p className="question-text">{currentQuestion.texto}</p>
-              <TextareaField
-                value={answers[currentQuestion.id] || ''}
-                onChange={handleAnswerChange}
-                rows={8}
-                autoResize
-                placeholder="Escribe tu respuesta aquí..."
-                className="answer-textarea"
-              />
-            </div>
-          </CustomCard>
-        </SplitterPanel>
-        <SplitterPanel className="navigation-panel" size={30}>
-          <CustomCard title="Preguntas" className="navigation-card">
-            <ul className="navigation-list">
-              {quiz.steps.map((q, index) => (
-                <li
-                  key={q.id}
-                  className={`navigation-item ${index === currentQuestionIndex ? 'active' : ''}`}
-                  onClick={() => handleQuestionTransition(index)}
-                >
-                  {index + 1}. {q.texto}
-                </li>
-              ))}
-            </ul>
-            <div className="back-button-container">
+      <div className="quiz-taker-page">
+        <Header />
+        <Splitter className="quiz-taker-splitter">
+          <SplitterPanel className="question-panel" size={70}>
+            <CustomCard
+                title={quiz.tema}
+                subTitle={`Pregunta ${currentQuestionIndex + 1} de ${quiz.steps.length}`}
+                footer={footer}
+                className="question-card"
+            >
+              <div className={`question-transition ${isTransitioning ? 'changing' : ''}`}>
+                <p className="question-text">{currentQuestion.texto}</p>
+                {Array.isArray(currentQuestion.opciones) && currentQuestion.opciones.length > 0 ? (
+                    <div className="quiz-options-group">
+                      {currentQuestion.opciones.map((opcion, idx) => (
+                          <label key={idx} className="quiz-option" style={{display: "block", margin: "0.5rem 0"}}>
+                            <input
+                                type="radio"
+                                name={`respuesta_${currentQuestion.id}`}
+                                value={opcion}
+                                checked={answers[currentQuestion.id] === opcion}
+                                onChange={handleAnswerChange}
+                                style={{marginRight: "0.5rem"}}
+                            />
+                            {opcion}
+                          </label>
+                      ))}
+                    </div>
+                ) : (
+                    <TextareaField
+                        value={answers[currentQuestion.id] || ''}
+                        onChange={handleAnswerChange}
+                        rows={8}
+                        autoResize
+                        placeholder="Escribe tu respuesta aquí..."
+                        className="answer-textarea"
+                    />
+                )}
+              </div>
+            </CustomCard>
+          </SplitterPanel>
+          <SplitterPanel className="navigation-panel" size={30}>
+            <CustomCard title="Preguntas" className="navigation-card">
+              <ul className="navigation-list">
+                {quiz.steps.map((q, index) => (
+                    <li
+                        key={q.id}
+                        className={`navigation-item ${index === currentQuestionIndex ? 'active' : ''}`}
+                        onClick={() => handleQuestionTransition(index)}
+                    >
+                      {index + 1}. {q.texto}
+                    </li>
+                ))}
+              </ul>
+              <div className="back-button-container">
+                <CustomButton
+                    label="Volver al Dashboard"
+                    icon="pi pi-home"
+                    severity="secondary"
+                    onClick={handleGoBack}
+                />
+              </div>
+            </CustomCard>
+          </SplitterPanel>
+        </Splitter>
+        <Dialog
+            visible={showCompletionModal}
+            onHide={handleCloseModal}
+            header="¡Quiz completado!"
+            footer={
               <CustomButton
-                label="Volver a Quizzes"
-                icon="pi pi-arrow-left"
-                onClick={handleGoBack}
-                className="back-button"
+                  label="Volver al Dashboard"
+                  icon="pi pi-arrow-left"
+                  onClick={handleCloseModal}
               />
-            </div>
-          </CustomCard>
-        </SplitterPanel>
-      </Splitter>
-
-      <Dialog
-        header="Quiz Completado"
-        visible={showCompletionModal}
-        onHide={handleCloseModal}
-        modal
-        footer={<CustomButton label="Aceptar" onClick={handleCloseModal} />}
-      >
-        <p>¡Has completado el quiz exitosamente!</p>
-      </Dialog>
-    </div>
+            }
+            style={{ width: '30vw', minWidth: 300 }}
+            modal
+        >
+          <div style={{ padding: "1rem" }}>
+            <p>¡Gracias por completar el quiz!</p>
+          </div>
+        </Dialog>
+      </div>
   );
 };
 

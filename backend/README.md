@@ -1,8 +1,8 @@
-# Proyecto Quiz AI
+# Alma AI Learning & Measurement Assistant
 
 ## 1. Propósito del Proyecto
 
-Este proyecto, denominado "Quiz AI", es una aplicación backend diseñada para gestionar y evaluar cuestionarios interactivos. Su característica principal es la capacidad de procesar las respuestas de los usuarios y utilizar un motor de inferencia externo para obtener resultados o conclusiones basadas en dichas respuestas.
+Este proyecto, denominado "Alma AI Learning & Measurement Assistant", es una aplicación backend diseñada para gestionar y evaluar cuestionarios interactivos. Su característica principal es la capacidad de procesar las respuestas de los usuarios y utilizar un motor de inferencia externo para obtener resultados o conclusiones basadas en dichas respuestas.
 
 La aplicación permite definir cuestionarios dinámicos en formato JSON, almacenarlos, y luego servirlos a los usuarios. Una vez que un usuario completa un cuestionario, sus respuestas son enviadas a un servicio de inferencia que devuelve un resultado.
 

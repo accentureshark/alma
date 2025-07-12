@@ -1,13 +1,13 @@
-package org.shark.quizai.adapter.in.rest;
+package org.shark.alma.adapter.in.rest;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.shark.quizai.application.service.QuizService;
-import org.shark.quizai.domain.model.QuizResponseRequest;
-import org.shark.quizai.domain.model.QuizDefinition;
+import org.shark.alma.application.service.QuizService;
+import org.shark.alma.domain.model.QuizResponseRequest;
+import org.shark.alma.domain.model.QuizDefinition;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

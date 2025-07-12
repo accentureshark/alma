@@ -1,13 +1,13 @@
-// backend/src/main/java/org/shark/quizai/application/service/QuizService.java
-package org.shark.quizai.application.service;
+// backend/src/main/java/org/shark/alma/application/service/QuizService.java
+package org.shark.alma.application.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.shark.quizai.domain.model.QuizDefinition;
-import org.shark.quizai.domain.model.QuizDefinitionEntity;
-import org.shark.quizai.domain.model.QuizResponseRequest;
-import org.shark.quizai.domain.port.out.QuizRepository;
-import org.shark.quizai.domain.port.out.InferenceClient;
+import org.shark.alma.domain.model.QuizDefinition;
+import org.shark.alma.domain.model.QuizDefinitionEntity;
+import org.shark.alma.domain.model.QuizResponseRequest;
+import org.shark.alma.domain.port.out.QuizRepository;
+import org.shark.alma.domain.port.out.InferenceClient;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;

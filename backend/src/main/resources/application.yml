@@ -26,6 +26,6 @@ llm:
 logging:
   level:
     com.zaxxer.hikari: DEBUG
-    org.shark.quizai: DEBUG
+    org.shark.alma: DEBUG
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE

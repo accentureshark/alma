@@ -1,5 +1,5 @@
 
-package org.shark.quizai.application.service;
+package org.shark.alma.application.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,11 +8,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.shark.quizai.domain.model.QuizDefinition;
-import org.shark.quizai.domain.model.QuizDefinitionEntity;
-import org.shark.quizai.domain.model.QuizResponseRequest;
-import org.shark.quizai.domain.port.out.InferenceClient;
-import org.shark.quizai.domain.port.out.QuizRepository;
+import org.shark.alma.domain.model.QuizDefinition;
+import org.shark.alma.domain.model.QuizDefinitionEntity;
+import org.shark.alma.domain.model.QuizResponseRequest;
+import org.shark.alma.domain.port.out.InferenceClient;
+import org.shark.alma.domain.port.out.QuizRepository;
 
 import java.sql.Timestamp;
 import java.util.*;

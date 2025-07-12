@@ -4,9 +4,9 @@ server:
 spring:
   quiz:
     datasource:
-      jdbc-url: jdbc:postgresql://localhost:5432/evolvai
-      username: postgres
-      password: postgres1234
+      jdbc-url: jdbc:postgresql://localhost:5432/alma
+      username: alma-user
+      password: alma-password
       driver-class-name: org.postgresql.Driver
       hikari:
         maximum-pool-size: 5

@@ -1,22 +1,25 @@
 package org.shark.quizai.domain.model;
 
 import jakarta.persistence.*;
-import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "quiz_definition", schema = "quiz")
 public class QuizDefinitionEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    public Long id;
+    @Column(columnDefinition = "uuid")
+    public UUID id;
 
-    @Column(unique = true)
+    @Column(name = "document_id", unique = true, nullable = false)
     public String documentId;
 
     public String tipo;
     public String tema;
     public String version;
 
-    @Column(columnDefinition = "jsonb")
-    public String stepsJson; // JSON serializado de steps (quiz_steps)
+    @Column(name = "steps_json", columnDefinition = "jsonb", nullable = false)
+    public String stepsJson;
+
+    @Column(name = "created_at")
+    public java.sql.Timestamp createdAt;
 }

@@ -14,7 +14,9 @@ import java.util.List;
 @AllArgsConstructor
 public class QuizDefinition {
     @Id
+    @Column(name = "document_id")
     private String documentId;
+
     private String tipo;
     private String tema;
     private String version;

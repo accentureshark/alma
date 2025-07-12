@@ -40,7 +40,7 @@ La estructura se organiza de la siguiente manera:
 
 *   `InferenceClient.java`: Interfaz que define el contrato para comunicarse con el motor de inferencia. Esto permite cambiar la implementación del motor de inferencia sin afectar al resto de la aplicación.
 
-*   `quiz_schema.sql`: Define el esquema de la base de datos. Contiene dos tablas principales:
+*   `01_quiz_schema.sql`: Define el esquema de la base de datos. Contiene dos tablas principales:
     *   `quiz.quiz_definition`: Almacena las definiciones de los quizzes, incluyendo los pasos en formato JSON.
     *   `quiz.quiz_response`: Almacena las respuestas de los usuarios a un quiz, junto con el resultado de la inferencia.
 
@@ -73,7 +73,7 @@ La estructura se organiza de la siguiente manera:
 
 - El backend se ejecuta en el puerto `8082` por defecto.
 - La configuración de la base de datos y otros parámetros se encuentran en `src/main/resources/application.yml`.
-- Para inicializar la base de datos, se incluyen los scripts `quiz_schema.sql` y `quiz_data.sql`.
+- Para inicializar la base de datos, se incluyen los scripts `01_quiz_schema.sql` y `02_quiz_data.sql`.
 
 ## 8. Dependencias Clave
 

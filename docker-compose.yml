@@ -1,0 +1,22 @@
+services:
+  alma-db:
+    image: postgres:15
+    container_name: alma-db
+    environment:
+      POSTGRES_DB: alma
+      POSTGRES_USER: alma-user
+      POSTGRES_PASSWORD: alma-password
+    ports:
+      - "5432:5432"
+    volumes:
+      - alma-data:/var/lib/postgresql/data
+      - ./backend/src/main/sql/01_quiz_schema.sql:/docker-entrypoint-initdb.d/01_quiz_schema.sql
+      - ./backend/src/main/sql/02_quiz_data.sql:/docker-entrypoint-initdb.d/02_quiz_data.sql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U alma-user" ]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
+volumes:
+  alma-data:

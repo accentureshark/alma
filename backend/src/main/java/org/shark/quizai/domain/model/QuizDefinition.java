@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Entity
-@Table(name = "quiz_definition", schema = "quiz")
+@Table(name = "quiz_definition")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

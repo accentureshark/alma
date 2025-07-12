@@ -1,0 +1,13 @@
+/home/runner/work/alma/alma/backend/src/main/java/org/shark/quizai/QuizApplication.java
+/home/runner/work/alma/alma/backend/src/main/java/org/shark/quizai/adapter/in/rest/QuizController.java
+/home/runner/work/alma/alma/backend/src/main/java/org/shark/quizai/application/service/QuizService.java
+/home/runner/work/alma/alma/backend/src/main/java/org/shark/quizai/config/QuizDataSourceConfig.java
+/home/runner/work/alma/alma/backend/src/main/java/org/shark/quizai/config/SwaggerConfig.java
+/home/runner/work/alma/alma/backend/src/main/java/org/shark/quizai/domain/model/QuizDefinition.java
+/home/runner/work/alma/alma/backend/src/main/java/org/shark/quizai/domain/model/QuizDefinitionEntity.java
+/home/runner/work/alma/alma/backend/src/main/java/org/shark/quizai/domain/model/QuizResponseRequest.java
+/home/runner/work/alma/alma/backend/src/main/java/org/shark/quizai/domain/port/out/InferenceClient.java
+/home/runner/work/alma/alma/backend/src/main/java/org/shark/quizai/domain/port/out/QuizRepository.java
+/home/runner/work/alma/alma/backend/src/main/java/org/shark/quizai/infrastructure/InferenceClientImpl.java
+/home/runner/work/alma/alma/backend/src/main/java/org/shark/quizai/infrastructure/dto/QueryResponse.java
+/home/runner/work/alma/alma/backend/src/main/java/org/shark/quizai/infrastructure/dto/RagQueryRequest.java

@@ -1,4 +1,4 @@
-package org.shark.quizai;
+package org.shark.alma;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

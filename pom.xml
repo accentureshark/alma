@@ -9,11 +9,11 @@
         <version>3.4.1</version>
     </parent>
 
-    <groupId>org.shark.quizAI</groupId>
+    <groupId>org.shark.alma</groupId>
     <artifactId>parent</artifactId>
     <version>0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>evolvAI-parent</name>
+    <name>alma</name>
     <description>Parent POM for evolvAI projects</description>
 
 

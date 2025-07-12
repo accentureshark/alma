@@ -1,4 +1,3 @@
-
 # Proyecto Quiz AI
 
 ## 1. Propósito del Proyecto
@@ -48,13 +47,34 @@ La estructura se organiza de la siguiente manera:
 ## 4. Funcionalidad Principal
 
 1.  **Definición de Quizzes**: Un administrador o sistema externo puede subir una definición de quiz en formato JSON a través del endpoint `/api/quiz/upload`. Esta definición se guarda en la base de datos.
+2.  **Obtención de Quizzes**: Los usuarios pueden consultar la definición de un quiz específico mediante `/api/quiz/{documentId}` o listar todos los quizzes disponibles con `/api/quiz/list`.
+3.  **Resolución y Evaluación**: Los usuarios envían sus respuestas a través de `/api/quiz/response`. El backend almacena las respuestas y consulta un motor de inferencia externo (por ejemplo, un sistema RAG) para obtener un resultado personalizado.
+4.  **Navegación por Pasos**: El endpoint `/api/quiz/step` permite obtener información de un paso específico de un quiz, facilitando la navegación paso a paso.
 
-2.  **Realización de un Quiz**: Un cliente (como una aplicación web o móvil) puede obtener la lista de quizzes y sus definiciones. El usuario responde a las preguntas del quiz paso a paso.
+## 5. Novedades y Mejoras Recientes
 
-3.  **Procesamiento de Respuestas**: Una vez completado el quiz, el cliente envía todas las respuestas al endpoint `/api/quiz/response`.
+- **Persistencia Mejorada**: Ahora se almacenan tanto las definiciones como las respuestas de los quizzes, junto con los resultados de inferencia, en la base de datos PostgreSQL.
+- **DTOs para Integración con IA**: Se agregaron DTOs (`RagQueryRequest`, `QueryResponse`) para estructurar la comunicación con el motor de inferencia.
+- **Configuración Modular**: El backend cuenta con clases de configuración dedicadas para la base de datos y Swagger/OpenAPI.
+- **Soporte para múltiples quizzes y pasos**: Se mejoró la estructura para soportar múltiples quizzes y navegación granular por pasos.
+- **Documentación OpenAPI**: El backend expone la documentación de la API de forma automática usando `springdoc-openapi`.
 
-4.  **Inferencia de Resultados**: El `QuizService` recibe las respuestas y, en lugar de evaluarlas con una lógica predefinida, las envía al `InferenceClient`. Este cliente se comunica con un servicio de IA externo que devuelve un resultado "inteligente" o una conclusión.
+## 6. Estructura de Carpetas
 
-5.  **Almacenamiento**: Las respuestas y el resultado de la inferencia se guardan en la base de datos para futuros análisis.
+- `domain/model`: Entidades y modelos de dominio (`QuizDefinition`, `QuizResponseRequest`, etc.).
+- `domain/port`: Interfaces de puertos de entrada y salida.
+- `application/service`: Lógica de negocio y casos de uso (`QuizService`).
+- `adapter/in/rest`: Controladores REST (`QuizController`).
+- `infrastructure`: Implementaciones concretas de puertos, integración con IA y DTOs.
+- `config`: Configuración de la base de datos y Swagger.
+- `resources/sql`: Scripts SQL para el esquema y datos iniciales.
 
-En resumen, **Quiz AI es un servicio para crear y realizar cuestionarios, cuya principal característica es que la evaluación de los resultados no es determinista, sino que se delega a un sistema de inteligencia artificial.**
+## 7. Ejecución y Configuración
+
+- El backend se ejecuta en el puerto `8082` por defecto.
+- La configuración de la base de datos y otros parámetros se encuentran en `src/main/resources/application.yml`.
+- Para inicializar la base de datos, se incluyen los scripts `quiz_schema.sql` y `quiz_data.sql`.
+
+## 8. Dependencias Clave
+
+- Spring Boot, Spring Data JPA, PostgreSQL, springdoc-openapi, y un módulo RAG para inferencia.

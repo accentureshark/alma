@@ -1,5 +1,7 @@
+
 package org.shark.quizai.application.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -7,15 +9,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.shark.quizai.domain.model.QuizDefinition;
+import org.shark.quizai.domain.model.QuizDefinitionEntity;
 import org.shark.quizai.domain.model.QuizResponseRequest;
 import org.shark.quizai.domain.port.out.InferenceClient;
 import org.shark.quizai.domain.port.out.QuizRepository;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.sql.Timestamp;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -34,24 +34,34 @@ class QuizServiceTest {
     private QuizService quizService;
 
     private QuizDefinition testQuizDefinition;
+    private QuizDefinitionEntity testQuizEntity;
     private QuizResponseRequest testQuizResponse;
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
-    void setUp() {
-        // Configurar datos de prueba
+    void setUp() throws Exception {
         QuizDefinition.QuizStep step1 = new QuizDefinition.QuizStep(
-                1, "step1", "¿Cuál es la capital de Francia?", 
+                1, "step1", "¿Cuál es la capital de Francia?",
                 Arrays.asList("Madrid", "París", "Londres", "Roma")
         );
         QuizDefinition.QuizStep step2 = new QuizDefinition.QuizStep(
-                2, "step2", "¿Cuál es el océano más grande?", 
+                2, "step2", "¿Cuál es el océano más grande?",
                 Arrays.asList("Atlántico", "Índico", "Pacífico", "Ártico")
         );
 
         testQuizDefinition = new QuizDefinition(
-                "quiz-123", "educativo", "geografía", "1.0", 
+                "quiz-123", "educativo", "geografía", "1.0",
                 Arrays.asList(step1, step2)
         );
+
+        testQuizEntity = new QuizDefinitionEntity();
+        testQuizEntity.id = UUID.randomUUID();
+        testQuizEntity.documentId = "quiz-123";
+        testQuizEntity.tipo = "educativo";
+        testQuizEntity.tema = "geografía";
+        testQuizEntity.version = "1.0";
+        testQuizEntity.stepsJson = objectMapper.writeValueAsString(Arrays.asList(step1, step2));
+        testQuizEntity.createdAt = new Timestamp(System.currentTimeMillis());
 
         Map<String, String> respuestas = new HashMap<>();
         respuestas.put("step1", "París");
@@ -72,13 +82,13 @@ class QuizServiceTest {
         quizService.saveDefinition(testQuizDefinition);
 
         // Assert
-        verify(quizRepository, times(1)).save(testQuizDefinition);
+        verify(quizRepository, times(1)).save(any(QuizDefinitionEntity.class));
     }
 
     @Test
     void getDefinition_WhenQuizExists_ShouldReturnQuiz() {
         // Arrange
-        when(quizRepository.findById("quiz-123")).thenReturn(Optional.of(testQuizDefinition));
+        when(quizRepository.findByDocumentId("quiz-123")).thenReturn(Optional.of(testQuizEntity));
 
         // Act
         QuizDefinition result = quizService.getDefinition("quiz-123");
@@ -88,20 +98,17 @@ class QuizServiceTest {
         assertEquals("quiz-123", result.getDocumentId());
         assertEquals("geografía", result.getTema());
         assertEquals(2, result.getSteps().size());
-        verify(quizRepository, times(1)).findById("quiz-123");
+        verify(quizRepository, times(1)).findByDocumentId("quiz-123");
     }
 
     @Test
-    void getDefinition_WhenQuizDoesNotExist_ShouldReturnNull() {
+    void getDefinition_WhenQuizDoesNotExist_ShouldThrow() {
         // Arrange
-        when(quizRepository.findById("nonexistent")).thenReturn(Optional.empty());
+        when(quizRepository.findByDocumentId("nonexistent")).thenReturn(Optional.empty());
 
-        // Act
-        QuizDefinition result = quizService.getDefinition("nonexistent");
-
-        // Assert
-        assertNull(result);
-        verify(quizRepository, times(1)).findById("nonexistent");
+        // Act & Assert
+        assertThrows(Exception.class, () -> quizService.getDefinition("nonexistent"));
+        verify(quizRepository, times(1)).findByDocumentId("nonexistent");
     }
 
     @Test
@@ -132,13 +139,27 @@ class QuizServiceTest {
     }
 
     @Test
-    void listDocumentIds_ShouldReturnListOfIds() {
+    void listDocumentIds_ShouldReturnListOfIds() throws Exception {
         // Arrange
-        QuizDefinition quiz1 = new QuizDefinition("quiz-1", "test", "math", "1.0", Arrays.asList());
-        QuizDefinition quiz2 = new QuizDefinition("quiz-2", "test", "science", "1.0", Arrays.asList());
-        QuizDefinition quiz3 = new QuizDefinition("quiz-3", "test", "history", "1.0", Arrays.asList());
-        
-        List<QuizDefinition> quizzes = Arrays.asList(quiz1, quiz2, quiz3);
+        QuizDefinitionEntity quiz1 = new QuizDefinitionEntity();
+        quiz1.id = UUID.randomUUID();
+        quiz1.documentId = "quiz-1";
+        quiz1.stepsJson = objectMapper.writeValueAsString(Collections.emptyList());
+        quiz1.createdAt = new Timestamp(System.currentTimeMillis());
+
+        QuizDefinitionEntity quiz2 = new QuizDefinitionEntity();
+        quiz2.id = UUID.randomUUID();
+        quiz2.documentId = "quiz-2";
+        quiz2.stepsJson = objectMapper.writeValueAsString(Collections.emptyList());
+        quiz2.createdAt = new Timestamp(System.currentTimeMillis());
+
+        QuizDefinitionEntity quiz3 = new QuizDefinitionEntity();
+        quiz3.id = UUID.randomUUID();
+        quiz3.documentId = "quiz-3";
+        quiz3.stepsJson = objectMapper.writeValueAsString(Collections.emptyList());
+        quiz3.createdAt = new Timestamp(System.currentTimeMillis());
+
+        List<QuizDefinitionEntity> quizzes = Arrays.asList(quiz1, quiz2, quiz3);
         when(quizRepository.findAll()).thenReturn(quizzes);
 
         // Act
@@ -156,7 +177,7 @@ class QuizServiceTest {
     @Test
     void listDocumentIds_WhenNoQuizzesExist_ShouldReturnEmptyList() {
         // Arrange
-        when(quizRepository.findAll()).thenReturn(Arrays.asList());
+        when(quizRepository.findAll()).thenReturn(Collections.emptyList());
 
         // Act
         List<String> result = quizService.listDocumentIds();
@@ -185,15 +206,15 @@ class QuizServiceTest {
 
         // Assert
         assertEquals(expectedResult, result);
-        
+
         // Verificar que se llamó con el objeto correcto
-        verify(inferenceClient, times(1)).inferResult(argThat(request -> 
-            "quiz-123".equals(request.getDocumentId()) &&
-            "testUser".equals(request.getUsuario()) &&
-            "Evalúa mis respuestas".equals(request.getQuery()) &&
-            "conv-123".equals(request.getConversationId()) &&
-            "Proporciona feedback detallado".equals(request.getCustomPrompt()) &&
-            request.getRespuestas().size() == 2
+        verify(inferenceClient, times(1)).inferResult(argThat(request ->
+                "quiz-123".equals(request.getDocumentId()) &&
+                        "testUser".equals(request.getUsuario()) &&
+                        "Evalúa mis respuestas".equals(request.getQuery()) &&
+                        "conv-123".equals(request.getConversationId()) &&
+                        "Proporciona feedback detallado".equals(request.getCustomPrompt()) &&
+                        request.getRespuestas().size() == 2
         ));
     }
 }

@@ -1,18 +1,13 @@
 package org.shark.alma.llm;
 
-import dev.langchain4j.model.openai.OpenAiChatModel;
+
 import dev.langchain4j.model.ollama.OllamaChatModel;
 import dev.langchain4j.model.chat.ChatLanguageModel;
 
 public class LlmFactory {
     public static ChatLanguageModel createChatModel(String provider, String model, String baseUrl, String apiKey) {
         switch (provider.toLowerCase()) {
-            case "openai":
-                return OpenAiChatModel.builder()
-                        .apiKey(apiKey)
-                        .modelName(model)
-                        .baseUrl(baseUrl)
-                        .build();
+
             case "ollama":
                 return OllamaChatModel.builder()
                         .baseUrl(baseUrl)

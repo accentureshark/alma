@@ -23,6 +23,16 @@
             <version>0.1-SNAPSHOT</version>
         </dependency>
         -->
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j</artifactId>
+            <version>0.25.0</version>
+        </dependency>
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-ollama</artifactId>
+            <version>0.25.0</version>
+        </dependency>
 
         <!-- Spring Boot -->
         <dependency>

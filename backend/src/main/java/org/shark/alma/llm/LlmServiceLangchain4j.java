@@ -26,6 +26,6 @@ public class LlmServiceLangchain4j implements LlmService {
     @Override
     public String generate(String prompt, String context) {
         String fullPrompt = prompt + "\nContexto:\n" + context;
-        return chatModel.generate(fullPrompt).content();
+        return chatModel.generate(fullPrompt);
     }
 }

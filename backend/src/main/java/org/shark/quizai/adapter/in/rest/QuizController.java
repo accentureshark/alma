@@ -1,5 +1,10 @@
 package org.shark.quizai.adapter.in.rest;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.shark.quizai.application.service.QuizService;
 import org.shark.quizai.domain.model.QuizResponseRequest;
 import org.shark.quizai.domain.model.QuizDefinition;
@@ -10,6 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/quiz")
+@Tag(name = "Quiz Controller", description = "API para manejo de quizzes con inferencia de IA")
 public class QuizController {
 
     private final QuizService quizService;
@@ -19,29 +25,57 @@ public class QuizController {
     }
 
     @PostMapping("/upload")
+    @Operation(summary = "Subir definición de quiz", description = "Guarda una nueva definición de quiz en el sistema")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Quiz guardado exitosamente"),
+            @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos")
+    })
     public ResponseEntity<Void> uploadDefinition(@RequestBody QuizDefinition definition) {
         quizService.saveDefinition(definition);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{documentId}")
-    public ResponseEntity<QuizDefinition> getQuiz(@PathVariable String documentId) {
+    @Operation(summary = "Obtener quiz por ID", description = "Recupera la definición de un quiz específico")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Quiz encontrado"),
+            @ApiResponse(responseCode = "404", description = "Quiz no encontrado")
+    })
+    public ResponseEntity<QuizDefinition> getQuiz(
+            @Parameter(description = "ID del documento del quiz", required = true)
+            @PathVariable String documentId) {
         return ResponseEntity.ok(quizService.getDefinition(documentId));
     }
 
     @PostMapping("/response")
+    @Operation(summary = "Procesar respuesta de quiz", description = "Procesa una respuesta del usuario y genera una inferencia")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Respuesta procesada exitosamente"),
+            @ApiResponse(responseCode = "400", description = "Datos de respuesta inválidos")
+    })
     public ResponseEntity<String> processResponse(@RequestBody QuizResponseRequest request) {
         String resultado = quizService.processResponse(request);
         return ResponseEntity.ok(resultado);
     }
 
     @GetMapping("/list")
+    @Operation(summary = "Listar todos los quizzes", description = "Obtiene una lista de todos los IDs de quizzes disponibles")
+    @ApiResponse(responseCode = "200", description = "Lista de quizzes obtenida exitosamente")
     public List<String> listAllQuizzes() {
         return quizService.listDocumentIds();
     }
 
     @GetMapping("/step")
-    public ResponseEntity<QuizDefinition.QuizStep> getStep(@RequestParam String quizId, @RequestParam int step) {
+    @Operation(summary = "Obtener paso específico de quiz", description = "Recupera un paso específico de un quiz")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Paso encontrado"),
+            @ApiResponse(responseCode = "404", description = "Paso no encontrado")
+    })
+    public ResponseEntity<QuizDefinition.QuizStep> getStep(
+            @Parameter(description = "ID del quiz", required = true)
+            @RequestParam String quizId, 
+            @Parameter(description = "Número del paso", required = true)
+            @RequestParam int step) {
         QuizDefinition def = quizService.getDefinition(quizId);
         return def.getSteps().stream()
                 .filter(s -> s.getStep() == step)

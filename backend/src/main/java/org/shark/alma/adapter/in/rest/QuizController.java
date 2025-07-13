@@ -23,8 +23,7 @@ public class QuizController {
 
     private static final Logger logger = LoggerFactory.getLogger(QuizController.class);
 
-    @Value("${llm.prompts.default}")
-    private String defaultPrompt;
+
 
     private final QuizService quizService;
 

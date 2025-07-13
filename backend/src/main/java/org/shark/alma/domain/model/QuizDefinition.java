@@ -1,28 +1,20 @@
 package org.shark.alma.domain.model;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-@Entity
-@Table(name = "quiz_definition", schema = "quiz")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class QuizDefinition {
-    @Id
-    @Column(name = "document_id")
     private String documentId;
-
     private String tipo;
     private String tema;
     private String version;
     private String prompt;
-
-    @Transient // O usa @ElementCollection si quieres persistir los steps
     private List<QuizStep> steps;
 
     @Data

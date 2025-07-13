@@ -118,6 +118,36 @@ public class QuizService {
         }
     }
 
+    public QuizDefinition updateDefinition(String documentId, QuizDefinition definition) {
+        // Verify the quiz exists
+        QuizDefinition existing = getDefinition(documentId);
+        
+        // Update the definition
+        definition.setDocumentId(documentId);
+        
+        try {
+            // Find and update the existing entity
+            Optional<QuizDefinitionEntity> entityOpt = quizRepository.findByDocumentId(documentId);
+            if (entityOpt.isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Quiz no encontrado");
+            }
+            
+            QuizDefinitionEntity entity = entityOpt.get();
+            entity.tipo = definition.getTipo();
+            entity.tema = definition.getTema();
+            entity.version = definition.getVersion();
+            entity.prompt = definition.getPrompt();
+            entity.stepsJson = objectMapper.writeValueAsString(definition.getSteps());
+            entity.createdAt = new java.sql.Timestamp(System.currentTimeMillis());
+            
+            quizRepository.save(entity);
+            
+            return definition;
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al actualizar el quiz", e);
+        }
+    }
+
     public List<String> listDocumentIds() {
         return quizRepository.findAll()
                 .stream()

@@ -77,6 +77,21 @@ public class QuizController {
         return quizService.listDocumentIds();
     }
 
+    @PutMapping("/{documentId}")
+    @Operation(summary = "Actualizar quiz", description = "Actualiza un quiz existente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Quiz actualizado exitosamente"),
+            @ApiResponse(responseCode = "404", description = "Quiz no encontrado"),
+            @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos")
+    })
+    public ResponseEntity<QuizDefinition> updateQuiz(
+            @Parameter(description = "ID del documento del quiz", required = true)
+            @PathVariable String documentId,
+            @RequestBody QuizDefinition definition) {
+        QuizDefinition updated = quizService.updateDefinition(documentId, definition);
+        return ResponseEntity.ok(updated);
+    }
+
     @GetMapping("/step")
     @Operation(summary = "Obtener paso específico de quiz", description = "Recupera un paso específico de un quiz")
     @ApiResponses(value = {

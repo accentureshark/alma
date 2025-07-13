@@ -105,8 +105,7 @@ public class QuizService {
                 prompt = request.getCustomPrompt();
             }
             if (prompt == null || prompt.trim().isEmpty()) {
-                prompt = "Analiza las respuestas del usuario al quiz y proporciona feedback constructivo. " +
-                        "Evalúa la corrección de las respuestas y ofrece sugerencias de mejora cuando sea necesario.";
+                prompt = getDefaultPrompt();
             }
             
             // Call LLM service
@@ -153,5 +152,10 @@ public class QuizService {
                 .stream()
                 .map(e -> e.documentId)
                 .collect(Collectors.toList());
+    }
+
+    public String getDefaultPrompt() {
+        return "Analiza las respuestas del usuario al quiz y proporciona feedback constructivo. " +
+               "Evalúa la corrección de las respuestas y ofrece sugerencias de mejora cuando sea necesario.";
     }
 }

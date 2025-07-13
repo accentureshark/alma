@@ -20,11 +20,21 @@ export const QuizDetail = ({ quiz }) => {
       )}
 
       <h4>Preguntas:</h4>
-      <ul>
-        {quiz.steps.map((step) => (
-          <li key={step.id}>{step.texto}</li>
-        ))}
-      </ul>
+      {quiz.steps.map((step) => (
+        <div key={step.id} className="quiz-step">
+          <h5>Pregunta {step.step}: {step.texto}</h5>
+          {step.opciones && step.opciones.length > 0 && (
+            <div className="quiz-options">
+              <h6>Opciones:</h6>
+              <ul>
+                {step.opciones.map((opcion, index) => (
+                  <li key={index}>{opcion}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      ))}
     </div>
   );
 };

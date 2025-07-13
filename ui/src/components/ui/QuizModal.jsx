@@ -6,13 +6,13 @@ import { useState } from "react";
 export const QuizModal = ({ visible, onHide, onSave }) => {
     const [quizTitle, setQuizTitle] = useState("");
     const [quizPrompt, setQuizPrompt] = useState("");
-    const [questions, setQuestions] = useState([{ id: 1, value: "" }]);
+    const [questions, setQuestions] = useState([{ id: 1, value: "", options: [""] }]);
     const MAX_QUESTIONS = 5;
 
     const addQuestion = () => {
         if (questions.length < MAX_QUESTIONS) {
             const newId = Math.max(...questions.map(q => q.id)) + 1;
-            setQuestions(prev => [...prev, { id: newId, value: "" }]);
+            setQuestions(prev => [...prev, { id: newId, value: "", options: [""] }]);
         }
     };
 
@@ -30,11 +30,46 @@ export const QuizModal = ({ visible, onHide, onSave }) => {
         );
     };
 
+    const addOption = (questionId) => {
+        setQuestions(prev => 
+            prev.map(question => 
+                question.id === questionId 
+                    ? { ...question, options: [...question.options, ""] }
+                    : question
+            )
+        );
+    };
+
+    const removeOption = (questionId, optionIndex) => {
+        setQuestions(prev => 
+            prev.map(question => 
+                question.id === questionId 
+                    ? { ...question, options: question.options.filter((_, index) => index !== optionIndex) }
+                    : question
+            )
+        );
+    };
+
+    const updateOption = (questionId, optionIndex, value) => {
+        setQuestions(prev => 
+            prev.map(question => 
+                question.id === questionId 
+                    ? { 
+                        ...question, 
+                        options: question.options.map((option, index) => 
+                            index === optionIndex ? value : option
+                        )
+                    }
+                    : question
+            )
+        );
+    };
+
     const handleClose = () => {
         // Opcional: resetear todo al cerrar
         // setQuizTitle("");
         // setQuizPrompt("");
-        // setQuestions([{ id: 1, value: "" }]);
+        // setQuestions([{ id: 1, value: "", options: [""] }]);
         onHide();
     };
 
@@ -99,6 +134,42 @@ export const QuizModal = ({ visible, onHide, onSave }) => {
                             placeholder={`Ingresa la pregunta ${index + 1}...`}
                             className="question-input"
                         />
+                        
+                        {/* Options section */}
+                        <div className="question-options">
+                            <div className="options-header">
+                                <label className="options-label">
+                                    <i className="pi pi-list" style={{ marginRight: '0.5rem' }}></i>
+                                    Opciones de respuesta
+                                </label>
+                                <Button
+                                    icon="pi pi-plus"
+                                    className="p-button-rounded p-button-text p-button-sm"
+                                    onClick={() => addOption(question.id)}
+                                    tooltip="Agregar opción"
+                                    tooltipOptions={{ position: 'top' }}
+                                />
+                            </div>
+                            {question.options.map((option, optionIndex) => (
+                                <div key={optionIndex} className="option-item">
+                                    <InputField
+                                        value={option}
+                                        onChange={(e) => updateOption(question.id, optionIndex, e.target.value)}
+                                        placeholder={`Opción ${optionIndex + 1}...`}
+                                        className="option-input"
+                                    />
+                                    {question.options.length > 1 && (
+                                        <Button
+                                            icon="pi pi-times"
+                                            className="p-button-rounded p-button-text p-button-danger p-button-sm"
+                                            onClick={() => removeOption(question.id, optionIndex)}
+                                            tooltip="Eliminar opción"
+                                            tooltipOptions={{ position: 'top' }}
+                                        />
+                                    )}
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 ))}
                 
@@ -130,7 +201,7 @@ export const QuizModal = ({ visible, onHide, onSave }) => {
                         icon="pi pi-check"
                         className="p-button-primary"
                         severity="success" // Cambiado para mejor visibilidad
-                        disabled={!quizTitle.trim() || questions.some(q => !q.value.trim())}
+                        disabled={!quizTitle.trim() || questions.some(q => !q.value.trim() || q.options.some(opt => !opt.trim()))}
                         onClick={() => {
                             const quizData = {
                                 tema: quizTitle,
@@ -141,7 +212,7 @@ export const QuizModal = ({ visible, onHide, onSave }) => {
                                         step: idx + 1,
                                         id: String(q.id),
                                         texto: q.value,
-                                        opciones: []
+                                        opciones: q.options.filter(opt => opt.trim())
                                     }))
                             };
                             onSave(quizData); // Llama a la función onSave

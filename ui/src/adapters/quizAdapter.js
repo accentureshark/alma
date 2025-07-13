@@ -12,6 +12,7 @@ export function adaptQuizDefinition(apiQuiz) {
     tema: apiQuiz.tema ?? apiQuiz.title,
     tipo: apiQuiz.tipo,
     version: apiQuiz.version,
+    prompt: apiQuiz.prompt || '',
     steps
   };
 }

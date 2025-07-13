@@ -44,6 +44,7 @@ public class QuizService {
             entity.tipo = definition.getTipo();
             entity.tema = definition.getTema();
             entity.version = definition.getVersion();
+            entity.prompt = definition.getPrompt();
             entity.stepsJson = objectMapper.writeValueAsString(definition.getSteps());
             entity.createdAt = new java.sql.Timestamp(System.currentTimeMillis());
             quizRepository.save(entity);
@@ -62,6 +63,7 @@ public class QuizService {
         def.setTipo(entity.tipo);
         def.setTema(entity.tema);
         def.setVersion(entity.version);
+        def.setPrompt(entity.prompt);
         try {
             def.setSteps(objectMapper.readValue(
                 entity.stepsJson,
@@ -97,8 +99,11 @@ public class QuizService {
                 context.append("Respuesta: ").append(answer != null ? answer : "Sin respuesta").append("\n\n");
             }
             
-            // Use custom prompt if provided, otherwise use default
-            String prompt = request.getCustomPrompt();
+            // Use prompt from quiz definition first, then from request, then default
+            String prompt = quizDefinition.getPrompt();
+            if (prompt == null || prompt.trim().isEmpty()) {
+                prompt = request.getCustomPrompt();
+            }
             if (prompt == null || prompt.trim().isEmpty()) {
                 prompt = "Analiza las respuestas del usuario al quiz y proporciona feedback constructivo. " +
                         "Evalúa la corrección de las respuestas y ofrece sugerencias de mejora cuando sea necesario.";

@@ -3,5 +3,6 @@ export const createEmptyQuizDefinition = () => ({
   tipo: '',
   tema: '',
   version: '',
+  prompt: '',
   steps: []
 });

@@ -5,6 +5,7 @@ import { useState } from "react";
 
 export const QuizModal = ({ visible, onHide, onSave }) => {
     const [quizTitle, setQuizTitle] = useState("");
+    const [quizPrompt, setQuizPrompt] = useState("");
     const [questions, setQuestions] = useState([{ id: 1, value: "" }]);
     const MAX_QUESTIONS = 5;
 
@@ -32,6 +33,7 @@ export const QuizModal = ({ visible, onHide, onSave }) => {
     const handleClose = () => {
         // Opcional: resetear todo al cerrar
         // setQuizTitle("");
+        // setQuizPrompt("");
         // setQuestions([{ id: 1, value: "" }]);
         onHide();
     };
@@ -59,6 +61,22 @@ export const QuizModal = ({ visible, onHide, onSave }) => {
                         onChange={(e) => setQuizTitle(e.target.value)}
                         placeholder="Ingresa el título de tu quiz..."
                         className="quiz-title-input"
+                    />
+                </div>
+
+                {/* Prompt del Quiz */}
+                <div className="quiz-prompt-section">
+                    <label htmlFor="quiz-prompt" className="quiz-prompt-label">
+                        <i className="pi pi-comments" style={{ marginRight: '0.5rem' }}></i>
+                        Prompt para LLM (opcional)
+                    </label>
+                    <textarea
+                        id="quiz-prompt"
+                        value={quizPrompt}
+                        onChange={(e) => setQuizPrompt(e.target.value)}
+                        placeholder="Ingresa el prompt que se usará para evaluar las respuestas con el LLM..."
+                        className="quiz-prompt-input"
+                        rows="3"
                     />
                 </div>
                 {questions.map((question, index) => (
@@ -116,6 +134,7 @@ export const QuizModal = ({ visible, onHide, onSave }) => {
                         onClick={() => {
                             const quizData = {
                                 tema: quizTitle,
+                                prompt: quizPrompt,
                                 steps: questions
                                     .filter(q => q.value.trim())
                                     .map((q, idx) => ({

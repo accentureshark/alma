@@ -16,8 +16,10 @@ public class QuizDefinitionEntity {
     public String tipo;
     public String tema;
     public String version;
+    public String prompt;
 
     @Column(name = "steps_json", columnDefinition = "jsonb", nullable = false)
+    @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
     public String stepsJson;
 
     @Column(name = "created_at")

@@ -259,22 +259,8 @@ const QuizTaker = () => {
               </ul>
               
               <Divider />
-              
-              <div className="custom-prompt-section">
-                <h4>Instrucciones personalizadas para el análisis</h4>
-                <InputTextarea
-                    value={customPrompt}
-                    onChange={(e) => setCustomPrompt(e.target.value)}
-                    rows={4}
-                    autoResize
-                    placeholder="Escribe instrucciones específicas para el análisis de tus respuestas (opcional)..."
-                    className="custom-prompt-textarea"
-                />
-                <small className="help-text">
-                  Si no especificas instrucciones, se realizará un análisis general de tus respuestas.
-                </small>
-              </div>
-              
+
+
               <div className="back-button-container">
                 <CustomButton
                     label="Volver al Dashboard"

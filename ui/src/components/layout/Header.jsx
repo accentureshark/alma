@@ -18,7 +18,7 @@ export const Header = () => {
     <header className="header-container">
       <div className="header-logo">
         <img src={logo} alt="Logo" className="logo" height={80} width={100} />
-        <h1 className="header-title">EvolvAI Quiz</h1>
+        <h1 className="header-title">Alma - AI Learning &amp; Measurement Assistant</h1>
       </div>
       <div className="header-button">
         <CustomButton

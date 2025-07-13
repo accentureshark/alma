@@ -4,25 +4,28 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.shark.alma</groupId>
-        <artifactId>parent</artifactId>
-        <version>0.1-SNAPSHOT</version>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.4.1</version>
     </parent>
 
+    <groupId>org.shark.alma</groupId>
     <artifactId>alma</artifactId>
+    <version>0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>alma</name>
+    <description>Backend para evolvAI projects</description>
+
+    <properties>
+        <java.version>17</java.version>
+        <spring-boot.version>3.4.1</spring-boot.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <checkstyle.config.location>checkstyle.xml</checkstyle.config.location>
+        <pmd.ruleset.location>../ruleset-pmd.xml</pmd.ruleset.location>
+    </properties>
 
     <dependencies>
-
-        <!-- Dependencia al módulo RAG -->
-        <!-- Commented out until module is available
-        <dependency>
-            <groupId>org.shark.evolvai</groupId>
-            <artifactId>rag</artifactId>
-            <version>0.1-SNAPSHOT</version>
-        </dependency>
-        -->
+        <!-- Langchain4j -->
         <dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j</artifactId>
@@ -54,7 +57,7 @@
             <artifactId>postgresql</artifactId>
         </dependency>
 
-        <!-- H2 Database for development/testing -->
+        <!-- H2 Database para desarrollo/testing -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
@@ -111,9 +114,61 @@
         </resources>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>3.6.0</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.puppycrawl.tools</groupId>
+                        <artifactId>checkstyle</artifactId>
+                        <version>10.25.0</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <configLocation>${checkstyle.config.location}</configLocation>
+                    <consoleOutput>true</consoleOutput>
+                    <failsOnError>true</failsOnError>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>3.21.2</version>
+                <configuration>
+                    <printFailingErrors>true</printFailingErrors>
+                    <rulesets>
+                        <ruleset>${pmd.ruleset.location}</ruleset>
+                    </rulesets>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot.version}</version>
             </plugin>
         </plugins>
     </build>
+
+    <repositories>
+        <repository>
+            <id>langchain4j</id>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
+        </repository>
+    </repositories>
 </project>

@@ -1,13 +1,35 @@
 import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
 import { InputField } from "./InputField";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-export const QuizModal = ({ visible, onHide, onSave }) => {
+export const QuizModal = ({ visible, onHide, onSave, editMode = false, initialData = null }) => {
     const [quizTitle, setQuizTitle] = useState("");
     const [quizPrompt, setQuizPrompt] = useState("");
     const [questions, setQuestions] = useState([{ id: 1, value: "", options: [""] }]);
     const MAX_QUESTIONS = 5;
+
+    // Initialize form when modal opens or editMode/initialData changes
+    useEffect(() => {
+        if (editMode && initialData) {
+            setQuizTitle(initialData.tema || "");
+            setQuizPrompt(initialData.prompt || "");
+            
+            if (initialData.steps && initialData.steps.length > 0) {
+                const formattedQuestions = initialData.steps.map((step, index) => ({
+                    id: parseInt(step.id) || index + 1,
+                    value: step.texto || "",
+                    options: step.opciones && step.opciones.length > 0 ? step.opciones : [""]
+                }));
+                setQuestions(formattedQuestions);
+            }
+        } else if (!editMode) {
+            // Reset form for create mode
+            setQuizTitle("");
+            setQuizPrompt("");
+            setQuestions([{ id: 1, value: "", options: [""] }]);
+        }
+    }, [editMode, initialData, visible]);
 
     const addQuestion = () => {
         if (questions.length < MAX_QUESTIONS) {
@@ -66,16 +88,41 @@ export const QuizModal = ({ visible, onHide, onSave }) => {
     };
 
     const handleClose = () => {
-        // Opcional: resetear todo al cerrar
-        // setQuizTitle("");
-        // setQuizPrompt("");
-        // setQuestions([{ id: 1, value: "", options: [""] }]);
+        if (!editMode) {
+            // Only reset form when creating new quiz
+            setQuizTitle("");
+            setQuizPrompt("");
+            setQuestions([{ id: 1, value: "", options: [""] }]);
+        }
         onHide();
+    };
+
+    const handleSave = () => {
+        const quizData = {
+            tema: quizTitle,
+            prompt: quizPrompt,
+            steps: questions
+                .filter(q => q.value.trim())
+                .map((q, idx) => ({
+                    step: idx + 1,
+                    id: String(q.id),
+                    texto: q.value,
+                    opciones: q.options.filter(opt => opt.trim())
+                }))
+        };
+        
+        if (editMode && initialData) {
+            // Include documentId for editing
+            quizData.documentId = initialData.documentId;
+        }
+        
+        onSave(quizData);
+        handleClose();
     };
 
     return (
         <Dialog 
-            header={`Crear Quiz ${quizTitle ? `- ${quizTitle}` : ''}`}
+            header={`${editMode ? 'Editar' : 'Crear'} Quiz ${quizTitle ? `- ${quizTitle}` : ''}`}
             visible={visible} 
             onHide={handleClose} 
             modal 
@@ -197,27 +244,12 @@ export const QuizModal = ({ visible, onHide, onSave }) => {
                         onClick={handleClose}
                     />
                     <Button
-                        label="Guardar"
+                        label={editMode ? "Actualizar" : "Guardar"}
                         icon="pi pi-check"
                         className="p-button-primary"
                         severity="success" // Cambiado para mejor visibilidad
                         disabled={!quizTitle.trim() || questions.some(q => !q.value.trim() || q.options.some(opt => !opt.trim()))}
-                        onClick={() => {
-                            const quizData = {
-                                tema: quizTitle,
-                                prompt: quizPrompt,
-                                steps: questions
-                                    .filter(q => q.value.trim())
-                                    .map((q, idx) => ({
-                                        step: idx + 1,
-                                        id: String(q.id),
-                                        texto: q.value,
-                                        opciones: q.options.filter(opt => opt.trim())
-                                    }))
-                            };
-                            onSave(quizData); // Llama a la función onSave
-                            handleClose();
-                        }}
+                        onClick={handleSave}
                     />
                 </div>
             </div>

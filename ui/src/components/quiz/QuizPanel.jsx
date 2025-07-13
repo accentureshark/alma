@@ -31,6 +31,8 @@ export const QuizPanel = () => {
   const [quizzes, setQuizzes] = useState(initialQuizzes);
   const [selectedQuiz, setSelectedQuiz] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [editingQuiz, setEditingQuiz] = useState(null);
 
   useEffect(() => {
     const loadQuizzes = async () => {
@@ -48,10 +50,52 @@ export const QuizPanel = () => {
     loadQuizzes();
   }, []);
 
-  const handleSaveQuiz = (quizData) => {
-    const adapted = adaptQuizDefinition({ ...quizData, documentId: `${Date.now()}` });
-    setQuizzes([...quizzes, adapted]);
-    setModalVisible(false);
+  const handleSaveQuiz = async (quizData) => {
+    try {
+      if (editMode && editingQuiz) {
+        // Update existing quiz
+        const response = await fetch(`/api/quiz/${editingQuiz.documentId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(quizData)
+        });
+        
+        if (response.ok) {
+          const updatedQuiz = await response.json();
+          const adapted = adaptQuizDefinition(updatedQuiz);
+          setQuizzes(prev => prev.map(quiz => 
+            quiz.documentId === editingQuiz.documentId ? adapted : quiz
+          ));
+          setSelectedQuiz(adapted);
+        } else {
+          console.error('Error updating quiz');
+        }
+      } else {
+        // Create new quiz
+        const adapted = adaptQuizDefinition({ ...quizData, documentId: `${Date.now()}` });
+        setQuizzes([...quizzes, adapted]);
+      }
+      
+      setModalVisible(false);
+      setEditMode(false);
+      setEditingQuiz(null);
+    } catch (error) {
+      console.error('Error saving quiz:', error);
+    }
+  };
+
+  const handleEditQuiz = (quiz) => {
+    setEditingQuiz(quiz);
+    setEditMode(true);
+    setModalVisible(true);
+  };
+
+  const handleCreateQuiz = () => {
+    setEditMode(false);
+    setEditingQuiz(null);
+    setModalVisible(true);
   };
 
   const itemTemplate = (quiz) => {
@@ -76,18 +120,24 @@ return (
           label="Crear Quiz"
           icon="pi pi-plus"
           severity="primary"
-          onClick={() => setModalVisible(true)}
+          onClick={handleCreateQuiz}
         />
       </div>
       <DataView className="quiz-list" value={quizzes} itemTemplate={itemTemplate} />
     </CustomCard>
     <CustomCard title="Detalles del Quiz" className="quiz-detail-card">
-      <QuizDetail quiz={selectedQuiz} />
+      <QuizDetail quiz={selectedQuiz} onEdit={handleEditQuiz} />
     </CustomCard>
     <QuizModal
       visible={modalVisible}
-      onHide={() => setModalVisible(false)}
+      onHide={() => {
+        setModalVisible(false);
+        setEditMode(false);
+        setEditingQuiz(null);
+      }}
       onSave={handleSaveQuiz}
+      editMode={editMode}
+      initialData={editingQuiz}
     />
   </div>
 );

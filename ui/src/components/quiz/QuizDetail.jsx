@@ -1,5 +1,5 @@
 
-export const QuizDetail = ({ quiz }) => {
+export const QuizDetail = ({ quiz, onEdit }) => {
   if (!quiz) {
     return (
       <div className="quiz-detail-container quiz-detail-placeholder">
@@ -10,7 +10,19 @@ export const QuizDetail = ({ quiz }) => {
 
   return (
     <div className="quiz-detail-container">
-      <h3>{quiz.tema}</h3>
+      <div className="quiz-detail-header">
+        <h3>{quiz.tema}</h3>
+        {onEdit && (
+          <button 
+            className="edit-quiz-btn"
+            onClick={() => onEdit(quiz)}
+            title="Editar quiz"
+          >
+            <i className="pi pi-pencil"></i>
+            Editar
+          </button>
+        )}
+      </div>
       
       {quiz.prompt && (
         <div className="quiz-prompt-section">

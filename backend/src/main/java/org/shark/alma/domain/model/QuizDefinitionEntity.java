@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import java.util.UUID;
 
 @Entity
-@Table(name = "quiz_definition", schema = "quiz")
+@Table(name = "quiz_definition")
 public class QuizDefinitionEntity {
     @Id
     @Column(columnDefinition = "uuid")
@@ -18,8 +18,7 @@ public class QuizDefinitionEntity {
     public String version;
     public String prompt;
 
-    @Column(name = "steps_json", columnDefinition = "jsonb", nullable = false)
-    @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
+    @Column(name = "steps_json", columnDefinition = "TEXT", nullable = false)
     public String stepsJson;
 
     @Column(name = "created_at")

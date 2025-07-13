@@ -1,13 +1,13 @@
-package org.shark.quizai.adapter.in.rest;
+package org.shark.alma.adapter.in.rest;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.shark.quizai.application.service.QuizService;
-import org.shark.quizai.domain.model.QuizResponseRequest;
-import org.shark.quizai.domain.model.QuizDefinition;
+import org.shark.alma.application.service.QuizService;
+import org.shark.alma.domain.model.QuizResponseRequest;
+import org.shark.alma.domain.model.QuizDefinition;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -55,6 +55,18 @@ public class QuizController {
     })
     public ResponseEntity<String> processResponse(@RequestBody QuizResponseRequest request) {
         String resultado = quizService.processResponse(request);
+        return ResponseEntity.ok(resultado);
+    }
+
+    @PostMapping("/response/llm")
+    @Operation(summary = "Procesar respuesta de quiz con LLM", description = "Procesa una respuesta del usuario usando el servicio LLM local con prompt personalizado")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Respuesta procesada exitosamente con LLM"),
+            @ApiResponse(responseCode = "400", description = "Datos de respuesta inválidos"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
+    public ResponseEntity<String> processResponseWithLlm(@RequestBody QuizResponseRequest request) {
+        String resultado = quizService.processResponseWithLlm(request);
         return ResponseEntity.ok(resultado);
     }
 

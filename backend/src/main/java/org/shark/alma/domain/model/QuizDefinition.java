@@ -1,4 +1,4 @@
-package org.shark.quizai.domain.model;
+package org.shark.alma.domain.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

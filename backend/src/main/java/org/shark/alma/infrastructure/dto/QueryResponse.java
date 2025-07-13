@@ -1,4 +1,4 @@
-package org.shark.quizai.infrastructure.dto;
+package org.shark.alma.infrastructure.dto;
 
 import java.util.List;
 

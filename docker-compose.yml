@@ -3,7 +3,7 @@ services:
     image: postgres:15
     container_name: alma-db
     environment:
-      POSTGRES_DB: alma
+      POSTGRES_DB: alma-db
       POSTGRES_USER: alma-user
       POSTGRES_PASSWORD: alma-password
     ports:
@@ -12,11 +12,6 @@ services:
       - alma-data:/var/lib/postgresql/data
       - ./backend/src/main/sql/01_quiz_schema.sql:/docker-entrypoint-initdb.d/01_quiz_schema.sql
       - ./backend/src/main/sql/02_quiz_data.sql:/docker-entrypoint-initdb.d/02_quiz_data.sql
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U alma-user" ]
-      interval: 10s
-      timeout: 10s
-      retries: 10
 
   ollama:
     image: docker.io/ollama/ollama:latest
@@ -47,28 +42,6 @@ services:
       timeout: 5s
       retries: 1
       start_period: 10s
-
-  ollama-init:
-    image: docker.io/curlimages/curl:latest
-    container_name: alma-ollama-init
-    restart: no
-    env_file:
-      - .env
-    depends_on:
-      ollama:
-        condition: service_healthy
-    entrypoint:
-      - /bin/sh
-      - -c
-      - |
-        echo 'Pulling LLM'
-        curl http://ollama:11434/api/pull -H 'Content-Type: application/json' -d '{"name":"'"$${OLLAMA_LLM_MODEL}"'"}'
-        echo 'Preloading LLM'
-        curl http://ollama:11434/api/generate -H 'Content-Type: application/json' -d '{"model":"'"$${OLLAMA_LLM_MODEL}"'"}'
-        echo 'Pulling embedding model'
-        curl http://ollama:11434/api/pull -H 'Content-Type: application/json' -d '{"name":"'"$${OLLAMA_EMBEDDING_MODEL}"'"}'
-        echo 'Preloading embedding model'
-        curl http://ollama:11434/api/embed -H 'Content-Type: application/json' -d '{"model":"'"$${OLLAMA_EMBEDDING_MODEL}"'"}'
 
 volumes:
   alma-data:

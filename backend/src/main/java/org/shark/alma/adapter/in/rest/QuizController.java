@@ -10,6 +10,9 @@ import org.shark.alma.domain.model.QuizResponseRequest;
 import org.shark.alma.domain.model.QuizDefinition;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -17,6 +20,11 @@ import java.util.List;
 @RequestMapping("/api/quiz")
 @Tag(name = "Quiz Controller", description = "API para manejo de quizzes con inferencia de IA")
 public class QuizController {
+
+    private static final Logger logger = LoggerFactory.getLogger(QuizController.class);
+
+    @Value("${llm.prompts.default}")
+    private String defaultPrompt;
 
     private final QuizService quizService;
 
@@ -31,6 +39,8 @@ public class QuizController {
             @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos")
     })
     public ResponseEntity<Void> uploadDefinition(@RequestBody QuizDefinition definition) {
+        int stepsCount = definition.getSteps() != null ? definition.getSteps().size() : 0;
+        logger.info("Subiendo quiz con {} steps", stepsCount);
         quizService.saveDefinition(definition);
         return ResponseEntity.ok().build();
     }
@@ -44,7 +54,10 @@ public class QuizController {
     public ResponseEntity<QuizDefinition> getQuiz(
             @Parameter(description = "ID del documento del quiz", required = true)
             @PathVariable String documentId) {
-        return ResponseEntity.ok(quizService.getDefinition(documentId));
+        QuizDefinition quiz = quizService.getDefinition(documentId);
+        int stepsCount = quiz.getSteps() != null ? quiz.getSteps().size() : 0;
+        logger.info("Obteniendo quiz {} con {} steps", documentId, stepsCount);
+        return ResponseEntity.ok(quiz);
     }
 
     @PostMapping("/response")
@@ -54,6 +67,9 @@ public class QuizController {
             @ApiResponse(responseCode = "400", description = "Datos de respuesta inválidos")
     })
     public ResponseEntity<String> processResponse(@RequestBody QuizResponseRequest request) {
+        QuizDefinition quiz = quizService.getDefinition(request.getDocumentId());
+        int stepsCount = quiz.getSteps() != null ? quiz.getSteps().size() : 0;
+        logger.info("Procesando respuesta para quiz {} con {} steps", request.getDocumentId(), stepsCount);
         String resultado = quizService.processResponse(request);
         return ResponseEntity.ok(resultado);
     }
@@ -66,16 +82,19 @@ public class QuizController {
             @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     public ResponseEntity<String> processResponseWithLlm(@RequestBody QuizResponseRequest request) {
+        QuizDefinition quiz = quizService.getDefinition(request.getDocumentId());
+        int stepsCount = quiz.getSteps() != null ? quiz.getSteps().size() : 0;
+        logger.info("Procesando respuesta LLM para quiz {} con {} steps", request.getDocumentId(), stepsCount);
         String resultado = quizService.processResponseWithLlm(request);
         return ResponseEntity.ok(resultado);
     }
 
-    // backend/src/main/java/org/shark/alma/adapter/in/rest/QuizController.java
     @GetMapping("/list")
     @Operation(summary = "Listar todos los quizzes", description = "Obtiene una lista de todos los IDs de quizzes disponibles")
     @ApiResponse(responseCode = "200", description = "Lista de quizzes obtenida exitosamente")
     public List<String> listAllQuizzes() {
         List<String> ids = quizService.listDocumentIds();
+        logger.info("Listando quizzes, cantidad: {}", ids != null ? ids.size() : 0);
         return ids != null ? ids : List.of();
     }
 
@@ -90,6 +109,8 @@ public class QuizController {
             @Parameter(description = "ID del documento del quiz", required = true)
             @PathVariable String documentId,
             @RequestBody QuizDefinition definition) {
+        int stepsCount = definition.getSteps() != null ? definition.getSteps().size() : 0;
+        logger.info("Actualizando quiz {} con {} steps", documentId, stepsCount);
         QuizDefinition updated = quizService.updateDefinition(documentId, definition);
         return ResponseEntity.ok(updated);
     }
@@ -102,10 +123,12 @@ public class QuizController {
     })
     public ResponseEntity<QuizDefinition.QuizStep> getStep(
             @Parameter(description = "ID del quiz", required = true)
-            @RequestParam String quizId, 
+            @RequestParam String quizId,
             @Parameter(description = "Número del paso", required = true)
             @RequestParam int step) {
         QuizDefinition def = quizService.getDefinition(quizId);
+        int stepsCount = def.getSteps() != null ? def.getSteps().size() : 0;
+        logger.info("Obteniendo step {} de quiz {} (total steps: {})", step, quizId, stepsCount);
         return def.getSteps().stream()
                 .filter(s -> s.getStep() == step)
                 .findFirst()
@@ -117,8 +140,7 @@ public class QuizController {
     @Operation(summary = "Obtener prompt por defecto", description = "Recupera el prompt por defecto del sistema")
     @ApiResponse(responseCode = "200", description = "Prompt por defecto obtenido exitosamente")
     public ResponseEntity<String> getDefaultPrompt() {
+        logger.info("Obteniendo prompt por defecto");
         return ResponseEntity.ok(quizService.getDefaultPrompt());
     }
-
 }
-

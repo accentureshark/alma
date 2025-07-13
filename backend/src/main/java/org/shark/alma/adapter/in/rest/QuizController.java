@@ -113,5 +113,12 @@ public class QuizController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/prompt/default")
+    @Operation(summary = "Obtener prompt por defecto", description = "Recupera el prompt por defecto del sistema")
+    @ApiResponse(responseCode = "200", description = "Prompt por defecto obtenido exitosamente")
+    public ResponseEntity<String> getDefaultPrompt() {
+        return ResponseEntity.ok(quizService.getDefaultPrompt());
+    }
+
 }
 

@@ -6,8 +6,23 @@ import { useState, useEffect } from "react";
 export const QuizModal = ({ visible, onHide, onSave, editMode = false, initialData = null }) => {
     const [quizTitle, setQuizTitle] = useState("");
     const [quizPrompt, setQuizPrompt] = useState("");
+    const [defaultPrompt, setDefaultPrompt] = useState("");
     const [questions, setQuestions] = useState([{ id: 1, value: "", options: [""] }]);
     const MAX_QUESTIONS = 5;
+
+    // Fetch default prompt on component mount
+    useEffect(() => {
+        const fetchDefaultPrompt = async () => {
+            try {
+                const response = await fetch('/api/quiz/prompt/default');
+                const prompt = await response.text();
+                setDefaultPrompt(prompt);
+            } catch (error) {
+                console.error('Error fetching default prompt:', error);
+            }
+        };
+        fetchDefaultPrompt();
+    }, []);
 
     // Initialize form when modal opens or editMode/initialData changes
     useEffect(() => {
@@ -156,7 +171,7 @@ export const QuizModal = ({ visible, onHide, onSave, editMode = false, initialDa
                         id="quiz-prompt"
                         value={quizPrompt}
                         onChange={(e) => setQuizPrompt(e.target.value)}
-                        placeholder="Ingresa el prompt que se usará para evaluar las respuestas con el LLM..."
+                        placeholder={defaultPrompt || "Ingresa el prompt que se usará para evaluar las respuestas con el LLM..."}
                         className="quiz-prompt-input"
                         rows="3"
                     />

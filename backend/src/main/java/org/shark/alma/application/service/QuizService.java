@@ -19,7 +19,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import org.springframework.beans.factory.annotation.Value;
 
 @Service
 public class QuizService {
@@ -132,20 +132,25 @@ public class QuizService {
         }
     }
 
+    public String getDefaultPrompt() {
+        return defaultPrompt;
+
+    }
+
     public QuizDefinition updateDefinition(String documentId, QuizDefinition definition) {
         // Verify the quiz exists
         QuizDefinition existing = getDefinition(documentId);
-        
+
         // Update the definition
         definition.setDocumentId(documentId);
-        
+
         try {
             // Find and update the existing entity
             Optional<QuizDefinitionEntity> entityOpt = quizRepository.findByDocumentId(documentId);
             if (entityOpt.isEmpty()) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Quiz no encontrado");
             }
-            
+
             QuizDefinitionEntity entity = entityOpt.get();
             entity.tipo = definition.getTipo();
             entity.tema = definition.getTema();
@@ -153,9 +158,9 @@ public class QuizService {
             entity.prompt = definition.getPrompt();
             entity.stepsJson = objectMapper.writeValueAsString(definition.getSteps());
             entity.createdAt = new java.sql.Timestamp(System.currentTimeMillis());
-            
+
             quizRepository.save(entity);
-            
+
             return definition;
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al actualizar el quiz", e);
@@ -167,11 +172,5 @@ public class QuizService {
                 .stream()
                 .map(e -> e.documentId)
                 .collect(Collectors.toList());
-    }
-
-    public String getDefaultPrompt() {
-        return defaultPrompt != null && !defaultPrompt.trim().isEmpty() ;
-                ? defaultPrompt
-                : "Por favor, responde las preguntas del quiz de la mejor manera posible.";
     }
 }

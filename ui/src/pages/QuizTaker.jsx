@@ -119,7 +119,7 @@ const QuizTaker = () => {
         customPrompt: customPrompt || 'Analiza las respuestas del usuario al quiz y proporciona feedback constructivo. Evalúa la corrección de las respuestas y ofrece sugerencias de mejora cuando sea necesario.'
       };
 
-      const response = await fetch(`${baseUrl}/quiz/response/llm`, {
+      const response = await fetch(`${baseUrl}/quiz/submission/submit`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

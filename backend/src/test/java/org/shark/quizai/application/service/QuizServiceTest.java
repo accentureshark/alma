@@ -54,7 +54,7 @@ class QuizServiceTest {
         );
 
         testQuizDefinition = new QuizDefinition(
-                "quiz-123", "educativo", "geografía", "1.0",
+                "quiz-123", "educativo", "geografía", "1.0", "Default prompt for testing",
                 Arrays.asList(step1, step2)
         );
 
@@ -64,6 +64,7 @@ class QuizServiceTest {
         testQuizEntity.tipo = "educativo";
         testQuizEntity.tema = "geografía";
         testQuizEntity.version = "1.0";
+        testQuizEntity.prompt = "Default prompt for testing";
         testQuizEntity.stepsJson = objectMapper.writeValueAsString(Arrays.asList(step1, step2));
         testQuizEntity.createdAt = new Timestamp(System.currentTimeMillis());
 
@@ -239,8 +240,44 @@ class QuizServiceTest {
     }
 
     @Test
-    void processResponseWithLlm_WithCustomPrompt_ShouldUseCustomPrompt() {
+    void processResponseWithLlm_WithCustomPrompt_ShouldUseQuizPrompt() {
         // Arrange
+        when(quizRepository.findByDocumentId("quiz-123")).thenReturn(Optional.of(testQuizEntity));
+        String customPrompt = "Analiza las respuestas en detalle y proporciona sugerencias específicas";
+        testQuizResponse.setCustomPrompt(customPrompt);
+        String expectedLlmResponse = "Análisis detallado con sugerencias específicas.";
+        // The quiz has a prompt, so it should use that instead of the custom prompt
+        when(llmService.generate(eq("Default prompt for testing"), any(String.class))).thenReturn(expectedLlmResponse);
+
+        // Act
+        String result = quizService.processResponseWithLlm(testQuizResponse);
+
+        // Assert
+        assertEquals(expectedLlmResponse, result);
+        verify(llmService, times(1)).generate(eq("Default prompt for testing"), any(String.class));
+    }
+
+    @Test
+    void processResponseWithLlm_WithNullCustomPrompt_ShouldUseQuizPrompt() {
+        // Arrange
+        when(quizRepository.findByDocumentId("quiz-123")).thenReturn(Optional.of(testQuizEntity));
+        testQuizResponse.setCustomPrompt(null);
+        String expectedLlmResponse = "Análisis general de las respuestas.";
+        // The quiz has a prompt, so it should use that
+        when(llmService.generate(eq("Default prompt for testing"), any(String.class))).thenReturn(expectedLlmResponse);
+
+        // Act
+        String result = quizService.processResponseWithLlm(testQuizResponse);
+
+        // Assert
+        assertEquals(expectedLlmResponse, result);
+        verify(llmService, times(1)).generate(eq("Default prompt for testing"), any(String.class));
+    }
+
+    @Test
+    void processResponseWithLlm_WithNoQuizPrompt_ShouldUseCustomPrompt() {
+        // Arrange
+        testQuizEntity.prompt = null; // No prompt in quiz
         when(quizRepository.findByDocumentId("quiz-123")).thenReturn(Optional.of(testQuizEntity));
         String customPrompt = "Analiza las respuestas en detalle y proporciona sugerencias específicas";
         testQuizResponse.setCustomPrompt(customPrompt);
@@ -256,8 +293,9 @@ class QuizServiceTest {
     }
 
     @Test
-    void processResponseWithLlm_WithNullCustomPrompt_ShouldUseDefaultPrompt() {
+    void processResponseWithLlm_WithNoQuizPromptAndNoCustomPrompt_ShouldUseDefaultPrompt() {
         // Arrange
+        testQuizEntity.prompt = null; // No prompt in quiz
         when(quizRepository.findByDocumentId("quiz-123")).thenReturn(Optional.of(testQuizEntity));
         testQuizResponse.setCustomPrompt(null);
         String expectedLlmResponse = "Análisis general de las respuestas.";

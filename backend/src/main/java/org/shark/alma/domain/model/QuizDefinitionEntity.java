@@ -16,6 +16,7 @@ public class QuizDefinitionEntity {
     public String tipo;
     public String tema;
     public String version;
+    public String prompt;
 
     @Column(name = "steps_json", columnDefinition = "jsonb", nullable = false)
     public String stepsJson;

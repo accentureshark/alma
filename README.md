@@ -11,6 +11,7 @@ Alma es un proyecto que permite crear, almacenar y evaluar cualquier tipo de **q
 - **Interacción con LLM**: las respuestas pueden enviarse a un servicio de inferencia o a un modelo LLM local/externo mediante LangChain4j. Esto permite generar evaluaciones o explicaciones con IA.
 - **Prompt adaptable**: cada petición puede incluir un prompt personalizado que el LLM usará al analizar las respuestas. Si no se indica, el sistema utiliza un prompt por defecto.
 - **Arquitectura modular**: se sigue un estilo hexagonal que separa dominio, servicios y adaptadores. El frontend (React + Vite) se encuentra en la carpeta `ui`.
+- **Perfiles diferenciados**: la aplicación web cuenta con un perfil de **Administrador** para gestionar cuestionarios y otro de **Usuario** para resolverlos.
 
 ## Estructura del repositorio
 
@@ -19,15 +20,15 @@ Alma es un proyecto que permite crear, almacenar y evaluar cualquier tipo de **q
 /ui      - Aplicación web en React para responder o crear quizzes
 ```
 
-El proyecto incluye archivos `docker-compose.yml` para levantar una instancia de PostgreSQL con los esquemas necesarios.
+El proyecto incluye un archivo `docker-compose.yml` que levanta tanto una instancia de PostgreSQL con los esquemas necesarios como un servicio de **Ollama**. Este último se utiliza para ejecutar localmente modelos de lenguaje que Alma emplea al generar feedback automatizado.
 
 ## Puesta en marcha rápida
 
-1. **Base de datos**
+1. **Servicios Docker**
    ```bash
-   docker compose up -d alma-db
+   docker compose up -d alma-db ollama
    ```
-   Esto crea la BD “alma” con los scripts iniciales.
+   Esto crea la BD "alma" con los scripts iniciales y pone en marcha el servicio de Ollama.
 
 2. **Backend**
    ```bash

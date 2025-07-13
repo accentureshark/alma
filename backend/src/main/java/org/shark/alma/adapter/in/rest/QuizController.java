@@ -70,11 +70,13 @@ public class QuizController {
         return ResponseEntity.ok(resultado);
     }
 
+    // backend/src/main/java/org/shark/alma/adapter/in/rest/QuizController.java
     @GetMapping("/list")
     @Operation(summary = "Listar todos los quizzes", description = "Obtiene una lista de todos los IDs de quizzes disponibles")
     @ApiResponse(responseCode = "200", description = "Lista de quizzes obtenida exitosamente")
     public List<String> listAllQuizzes() {
-        return quizService.listDocumentIds();
+        List<String> ids = quizService.listDocumentIds();
+        return ids != null ? ids : List.of();
     }
 
     @GetMapping("/step")

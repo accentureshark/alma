@@ -18,5 +18,58 @@ services:
       timeout: 10s
       retries: 10
 
+  ollama:
+    image: docker.io/ollama/ollama:latest
+    container_name: alma-ollama
+    restart: unless-stopped
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities:
+                - gpu
+    ports:
+      - "11434:11434"
+    environment:
+      CUDA_VISIBLE_DEVICES: 0
+      OLLAMA_KEEP_ALIVE: -1
+      OLLAMA_FLASH_ATTENTION: 1
+      OLLAMA_CONTEXT_LENGTH: 8192
+      OLLAMA_KV_CACHE_TYPE: q4_0
+      OLLAMA_DEBUG: 1
+    volumes:
+      - ollama-data:/root/.ollama
+    healthcheck:
+      test: ["CMD", "ollama", "--version"]
+      interval: 1h
+      timeout: 5s
+      retries: 1
+      start_period: 10s
+
+  ollama-init:
+    image: docker.io/curlimages/curl:latest
+    container_name: alma-ollama-init
+    restart: no
+    env_file:
+      - .env
+    depends_on:
+      ollama:
+        condition: service_healthy
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        echo 'Pulling LLM'
+        curl http://ollama:11434/api/pull -H 'Content-Type: application/json' -d '{"name":"'"$${OLLAMA_LLM_MODEL}"'"}'
+        echo 'Preloading LLM'
+        curl http://ollama:11434/api/generate -H 'Content-Type: application/json' -d '{"model":"'"$${OLLAMA_LLM_MODEL}"'"}'
+        echo 'Pulling embedding model'
+        curl http://ollama:11434/api/pull -H 'Content-Type: application/json' -d '{"name":"'"$${OLLAMA_EMBEDDING_MODEL}"'"}'
+        echo 'Preloading embedding model'
+        curl http://ollama:11434/api/embed -H 'Content-Type: application/json' -d '{"model":"'"$${OLLAMA_EMBEDDING_MODEL}"'"}'
+
 volumes:
   alma-data:
+  ollama-data:

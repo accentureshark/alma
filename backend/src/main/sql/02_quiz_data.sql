@@ -2,7 +2,7 @@ INSERT INTO quiz.quiz_definition (
     id, document_id, tipo, tema, version, steps_json, prompt, created_at
 ) VALUES (
              '029856cb-8afa-4188-a6bd-117d0615c1c4',
-             'quiz-orientacion-vocacional',
+             'orientacion_java_tech_vs_mgmt',
              'quiz',
              'orientacion_java_tech_vs_mgmt',
              '2.0',

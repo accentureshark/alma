@@ -1,0 +1,7 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://alma-db:5432/alma-db
+
+llm:
+  api:
+    base-url: http://ollama:11434

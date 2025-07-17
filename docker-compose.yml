@@ -1,4 +1,3 @@
-version: "3.9"
 services:
   alma-db:
     image: postgres:15
@@ -13,22 +12,17 @@ services:
       - alma-data:/var/lib/postgresql/data
       - ./backend/src/main/sql/01_quiz_schema.sql:/docker-entrypoint-initdb.d/01_quiz_schema.sql
       - ./backend/src/main/sql/02_quiz_data.sql:/docker-entrypoint-initdb.d/02_quiz_data.sql
-
-  alma-ollama-init:
-    image: docker.io/ollama/ollama:latest
-    container_name: alma-ollama-init
-    entrypoint: ["/bin/sh", "/ollama-init.sh"]
-    volumes:
-      - ollama-data:/root/.ollama
-      - ./ollama-init.sh:/ollama-init.sh
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "alma-user", "-d", "alma-db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   ollama:
     image: docker.io/ollama/ollama:latest
     container_name: alma-ollama
     restart: unless-stopped
-    depends_on:
-      alma-ollama-init:
-        condition: service_completed_successfully
+    entrypoint: ["/usr/bin/bash", "/ollama-init.sh"]
     deploy:
       resources:
         reservations:
@@ -40,6 +34,7 @@ services:
     ports:
       - "11434:11434"
     environment:
+      PRELOAD_MODEL_NAME: hf.co/unsloth/gemma-3n-E4B-it-GGUF:Q4_K_XL
       CUDA_VISIBLE_DEVICES: 0
       OLLAMA_KEEP_ALIVE: -1
       OLLAMA_FLASH_ATTENTION: 1
@@ -48,6 +43,7 @@ services:
       OLLAMA_DEBUG: 1
     volumes:
       - ollama-data:/root/.ollama
+      - ./ollama-init.sh:/ollama-init.sh
     healthcheck:
       test: ["CMD", "ollama", "--version"]
       interval: 1h

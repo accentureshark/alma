@@ -23,7 +23,7 @@ llm:
     quiz: "You are a quiz assistant. Answer the following question: {question}"
     chat: "You are a chat assistant. Respond to the user's message: {message}"
   provider: ollama      # ollama | openai | localai | bedrock | ...
-  model: llama3         # el modelo a usar
+  model: hf.co/unsloth/gemma-3n-E4B-it-GGUF:Q4_K_XL         # el modelo a usar
   api:
     base-url: http://localhost:11434
     key: ""             # solo necesario si el proveedor lo requiere

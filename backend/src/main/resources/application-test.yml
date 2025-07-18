@@ -1,0 +1,40 @@
+server:
+  port: 8082
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password: ""
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+    database-platform: org.hibernate.dialect.H2Dialect
+  h2:
+    console:
+      enabled: true
+
+llm:
+  prompts:
+    default: "Analiza las respuestas del usuario al quiz y proporciona feedback constructivo. Evalúa la corrección de las respuestas y ofrece sugerencias de mejora cuando sea necesario."
+    quiz: "You are a quiz assistant. Answer the following question: {question}"
+    chat: "You are a chat assistant. Respond to the user's message: {message}"
+  provider: ollama
+  model: test-model
+  api:
+    base-url: http://localhost:11434
+    key: ""
+
+jackson:
+  serialization:
+    indent_output: true
+  default-property-inclusion: non_null
+
+logging:
+  level:
+    com.zaxxer.hikari: DEBUG
+    org.shark.alma: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE

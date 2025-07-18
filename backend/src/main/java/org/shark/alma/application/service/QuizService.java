@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.Collections;
+import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -74,10 +76,20 @@ public class QuizService {
         def.setVersion(entity.getVersion());
         def.setPrompt(entity.getPrompt());
         try {
-            def.setSteps(objectMapper.readValue(
+            List<QuizDefinition.QuizStep> steps = objectMapper.readValue(
                     entity.getStepsJson(),
-                    new TypeReference<List<QuizDefinition.QuizStep>>() {})
-            );
+                    new TypeReference<List<QuizDefinition.QuizStep>>() {});
+            
+            // Randomize options for steps that have random flag set to true
+            for (QuizDefinition.QuizStep step : steps) {
+                if (step.isRandom() && step.getOpciones() != null && !step.getOpciones().isEmpty()) {
+                    List<String> randomizedOptions = new ArrayList<>(step.getOpciones());
+                    Collections.shuffle(randomizedOptions);
+                    step.setOpciones(randomizedOptions);
+                }
+            }
+            
+            def.setSteps(steps);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al leer los pasos del quiz", e);
         }

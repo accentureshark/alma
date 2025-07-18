@@ -45,11 +45,11 @@ class QuizServiceTest {
     void setUp() throws Exception {
         QuizDefinition.QuizStep step1 = new QuizDefinition.QuizStep(
                 1, "step1", "¿Cuál es la capital de Francia?",
-                Arrays.asList("Madrid", "París", "Londres", "Roma")
+                Arrays.asList("Madrid", "París", "Londres", "Roma"), false
         );
         QuizDefinition.QuizStep step2 = new QuizDefinition.QuizStep(
                 2, "step2", "¿Cuál es el océano más grande?",
-                Arrays.asList("Atlántico", "Índico", "Pacífico", "Ártico")
+                Arrays.asList("Atlántico", "Índico", "Pacífico", "Ártico"), false
         );
 
         testQuizDefinition = new QuizDefinition(
@@ -250,5 +250,89 @@ class QuizServiceTest {
         when(quizRepository.findByDocumentId("quiz-123")).thenReturn(Optional.empty());
         assertThrows(Exception.class, () -> quizService.processResponseWithLlm(testQuizResponse));
         verify(llmService, never()).generate(any(String.class), any(String.class));
+    }
+
+    @Test
+    void getDefinition_WithRandomFlag_ShouldRandomizeOptions() throws Exception {
+        // Arrange: Create steps with random flag enabled
+        QuizDefinition.QuizStep stepWithRandom = new QuizDefinition.QuizStep(
+                1, "step1", "¿Cuál es la capital de Francia?",
+                Arrays.asList("Madrid", "París", "Londres", "Roma"), true
+        );
+        QuizDefinition.QuizStep stepWithoutRandom = new QuizDefinition.QuizStep(
+                2, "step2", "¿Cuál es el océano más grande?",
+                Arrays.asList("Atlántico", "Índico", "Pacífico", "Ártico"), false
+        );
+
+        QuizDefinitionEntity entityWithRandom = new QuizDefinitionEntity();
+        entityWithRandom.setId(UUID.randomUUID());
+        entityWithRandom.setDocumentId("quiz-random");
+        entityWithRandom.setTipo("educativo");
+        entityWithRandom.setTema("geografía");
+        entityWithRandom.setVersion("1.0");
+        entityWithRandom.setPrompt("Test prompt");
+        entityWithRandom.setStepsJson(objectMapper.writeValueAsString(Arrays.asList(stepWithRandom, stepWithoutRandom)));
+        entityWithRandom.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+
+        when(quizRepository.findByDocumentId("quiz-random")).thenReturn(Optional.of(entityWithRandom));
+
+        // Act: Call multiple times to verify randomization (options will be different sometimes)
+        List<String> originalOptions = Arrays.asList("Madrid", "París", "Londres", "Roma");
+        List<String> constantOptions = Arrays.asList("Atlántico", "Índico", "Pacífico", "Ártico");
+        
+        QuizDefinition result1 = quizService.getDefinition("quiz-random");
+        QuizDefinition result2 = quizService.getDefinition("quiz-random");
+
+        // Assert: Random step should have possibly different order, non-random should be same
+        assertNotNull(result1);
+        assertNotNull(result2);
+        assertEquals(2, result1.getSteps().size());
+        assertEquals(2, result2.getSteps().size());
+
+        // Step 1 has random=true, so options may be in different order
+        QuizDefinition.QuizStep randomStep1 = result1.getSteps().get(0);
+        QuizDefinition.QuizStep randomStep2 = result2.getSteps().get(0);
+        assertTrue(randomStep1.isRandom());
+        assertTrue(randomStep2.isRandom());
+        assertEquals(originalOptions.size(), randomStep1.getOpciones().size());
+        assertEquals(originalOptions.size(), randomStep2.getOpciones().size());
+        assertTrue(randomStep1.getOpciones().containsAll(originalOptions));
+        assertTrue(randomStep2.getOpciones().containsAll(originalOptions));
+
+        // Step 2 has random=false, so options should remain in original order
+        QuizDefinition.QuizStep constantStep1 = result1.getSteps().get(1);
+        QuizDefinition.QuizStep constantStep2 = result2.getSteps().get(1);
+        assertFalse(constantStep1.isRandom());
+        assertFalse(constantStep2.isRandom());
+        assertEquals(constantOptions, constantStep1.getOpciones());
+        assertEquals(constantOptions, constantStep2.getOpciones());
+    }
+
+    @Test
+    void getDefinition_WithRandomFlagButEmptyOptions_ShouldNotFail() throws Exception {
+        // Arrange: Create step with random flag but empty options
+        QuizDefinition.QuizStep stepWithRandomEmptyOptions = new QuizDefinition.QuizStep(
+                1, "step1", "¿Cuál es la capital de Francia?",
+                Collections.emptyList(), true
+        );
+
+        QuizDefinitionEntity entityWithRandomEmpty = new QuizDefinitionEntity();
+        entityWithRandomEmpty.setId(UUID.randomUUID());
+        entityWithRandomEmpty.setDocumentId("quiz-random-empty");
+        entityWithRandomEmpty.setTipo("educativo");
+        entityWithRandomEmpty.setTema("geografía");
+        entityWithRandomEmpty.setVersion("1.0");
+        entityWithRandomEmpty.setPrompt("Test prompt");
+        entityWithRandomEmpty.setStepsJson(objectMapper.writeValueAsString(Arrays.asList(stepWithRandomEmptyOptions)));
+        entityWithRandomEmpty.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+
+        when(quizRepository.findByDocumentId("quiz-random-empty")).thenReturn(Optional.of(entityWithRandomEmpty));
+
+        // Act & Assert: Should not fail and return empty options
+        QuizDefinition result = quizService.getDefinition("quiz-random-empty");
+        assertNotNull(result);
+        assertEquals(1, result.getSteps().size());
+        assertTrue(result.getSteps().get(0).isRandom());
+        assertTrue(result.getSteps().get(0).getOpciones().isEmpty());
     }
 }

@@ -14,7 +14,8 @@ export const QuizModal = ({ visible, onHide, onSave, editMode = false, initialDa
     useEffect(() => {
         const fetchDefaultPrompt = async () => {
             try {
-                const response = await fetch('/api/quiz/prompt/default');
+                const baseUrl = import.meta.env.VITE_API_URL || '/api';
+                const response = await fetch(`${baseUrl}/quiz/prompt/default`);
                 const prompt = await response.text();
                 setDefaultPrompt(prompt);
             } catch (error) {

@@ -44,6 +44,7 @@ const QuizTaker = () => {
   const [llmResponse, setLlmResponse] = useState('');
   const [isProcessingLlm, setIsProcessingLlm] = useState(false);
   const [showLlmResult, setShowLlmResult] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
   useEffect(() => {
     // Intenta cargar el quiz desde el backend
@@ -108,7 +109,12 @@ const QuizTaker = () => {
     }
   };
 
-  const handleSubmitQuiz = async () => {
+  const handleSubmitQuiz = () => {
+    setShowConfirmation(true);
+  };
+
+  const handleConfirmSubmit = async () => {
+    setShowConfirmation(false);
     setIsProcessingLlm(true);
     try {
       const baseUrl = import.meta.env.VITE_API_URL || '/api';
@@ -206,6 +212,39 @@ const QuizTaker = () => {
       <div className="quiz-taker-page">
         <Header />
         <Splitter className="quiz-taker-splitter">
+          <SplitterPanel className="navigation-panel" size={30}>
+            <CustomCard title="Preguntas" className="navigation-card">
+              <ul className="navigation-list">
+                {quiz.steps.map((q, index) => {
+                  const isAnswered = answers[q.id] && 
+                    (Array.isArray(q.opciones) && q.opciones.length > 0 
+                      ? answers[q.id] !== '' 
+                      : answers[q.id].trim() !== '');
+                  return (
+                    <li
+                        key={q.id}
+                        className={`navigation-item ${index === currentQuestionIndex ? 'active' : ''} ${isAnswered ? 'answered' : ''}`}
+                        onClick={() => handleQuestionTransition(index)}
+                    >
+                      {index + 1}. {q.texto}
+                    </li>
+                  );
+                })}
+              </ul>
+              
+              <Divider />
+
+
+              <div className="back-button-container">
+                <CustomButton
+                    label="Volver al Dashboard"
+                    icon="pi pi-home"
+                    severity="secondary"
+                    onClick={handleGoBack}
+                />
+              </div>
+            </CustomCard>
+          </SplitterPanel>
           <SplitterPanel className="question-panel" size={70}>
             <CustomCard
                 title={quiz.tema}
@@ -241,33 +280,6 @@ const QuizTaker = () => {
                         className="answer-textarea"
                     />
                 )}
-              </div>
-            </CustomCard>
-          </SplitterPanel>
-          <SplitterPanel className="navigation-panel" size={30}>
-            <CustomCard title="Preguntas" className="navigation-card">
-              <ul className="navigation-list">
-                {quiz.steps.map((q, index) => (
-                    <li
-                        key={q.id}
-                        className={`navigation-item ${index === currentQuestionIndex ? 'active' : ''}`}
-                        onClick={() => handleQuestionTransition(index)}
-                    >
-                      {index + 1}. {q.texto}
-                    </li>
-                ))}
-              </ul>
-              
-              <Divider />
-
-
-              <div className="back-button-container">
-                <CustomButton
-                    label="Volver al Dashboard"
-                    icon="pi pi-home"
-                    severity="secondary"
-                    onClick={handleGoBack}
-                />
               </div>
             </CustomCard>
           </SplitterPanel>
@@ -317,6 +329,36 @@ const QuizTaker = () => {
                 </div>
               </div>
             )}
+          </div>
+        </Dialog>
+        <Dialog
+            visible={showConfirmation}
+            onHide={() => setShowConfirmation(false)}
+            header="Confirmar envío"
+            footer={
+              <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                <CustomButton
+                    label="Cancelar"
+                    icon="pi pi-times"
+                    severity="secondary"
+                    onClick={() => setShowConfirmation(false)}
+                />
+                <CustomButton
+                    label="Confirmar y enviar"
+                    icon="pi pi-check"
+                    className="p-button-success"
+                    onClick={handleConfirmSubmit}
+                />
+              </div>
+            }
+            style={{ width: '40vw', minWidth: 300, maxWidth: 600 }}
+            modal
+        >
+          <div style={{ padding: "1rem" }}>
+            <p>¿Estás seguro de que quieres enviar tu quiz para análisis?</p>
+            <p style={{ color: '#64748b', fontSize: '0.9rem' }}>
+              Una vez enviado, tus respuestas serán analizadas por el sistema de inteligencia artificial.
+            </p>
           </div>
         </Dialog>
       </div>

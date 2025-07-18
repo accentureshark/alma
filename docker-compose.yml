@@ -13,6 +13,17 @@ services:
       ollama:
         condition: service_healthy
 
+  alma-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: alma-frontend
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    depends_on:
+      - alma-backend
+
   alma-db:
     image: postgres:15
     container_name: alma-db

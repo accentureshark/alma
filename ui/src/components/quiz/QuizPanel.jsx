@@ -37,10 +37,11 @@ export const QuizPanel = () => {
   useEffect(() => {
     const loadQuizzes = async () => {
       try {
-        const res = await fetch('/api/quiz/list');
+        const baseUrl = import.meta.env.VITE_API_URL || '/api';
+        const res = await fetch(`${baseUrl}/quiz/list`);
         const ids = await res.json();
         const defs = await Promise.all(
-          ids.map(id => fetch(`/api/quiz/${id}`).then(r => r.json()))
+          ids.map(id => fetch(`${baseUrl}/quiz/${id}`).then(r => r.json()))
         );
         setQuizzes(defs);
       } catch (err) {
@@ -54,7 +55,8 @@ export const QuizPanel = () => {
     try {
       if (editMode && editingQuiz) {
         // Update existing quiz
-        const response = await fetch(`/api/quiz/${editingQuiz.documentId}`, {
+        const baseUrl = import.meta.env.VITE_API_URL || '/api';
+        const response = await fetch(`${baseUrl}/quiz/${editingQuiz.documentId}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -142,4 +144,3 @@ return (
   </div>
 );
 }
-

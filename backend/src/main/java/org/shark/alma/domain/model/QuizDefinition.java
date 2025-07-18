@@ -34,5 +34,6 @@ public class QuizDefinition {
         private String id;
         private String texto;
         private List<String> opciones;
+        private boolean random;
     }
 }

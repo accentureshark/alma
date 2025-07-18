@@ -1,27 +1,41 @@
 package org.shark.alma.domain.model;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 import jakarta.persistence.*;
 import java.util.UUID;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
+
 @Table(name = "quiz_definition", schema = "quiz")
 public class QuizDefinitionEntity {
     @Id
     @Column(columnDefinition = "uuid")
-    public UUID id;
+    private UUID id;
 
-    @Column(name = "document_id", unique = true, nullable = false)
-    public String documentId;
+    @Column(name = "document_id", unique = true, nullable = false, columnDefinition = "TEXT")
+    private String documentId;
 
-    public String tipo;
-    public String tema;
-    public String version;
-    public String prompt;
+    @Column(name = "tipo", columnDefinition = "TEXT")
+    private String tipo;
+
+    @Column(name = "tema", columnDefinition = "TEXT")
+    private String tema;
+
+    @Column(name = "version", columnDefinition = "TEXT")
+    private String version;
+
+    @Column(name = "prompt", columnDefinition = "TEXT")
+    private String prompt;
 
     @Column(name = "steps_json", columnDefinition = "jsonb", nullable = false)
     @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
-    public String stepsJson;
+    private String stepsJson;
 
     @Column(name = "created_at")
-    public java.sql.Timestamp createdAt;
+    private java.sql.Timestamp createdAt;
 }

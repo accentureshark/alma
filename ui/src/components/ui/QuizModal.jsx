@@ -7,7 +7,7 @@ export const QuizModal = ({ visible, onHide, onSave, editMode = false, initialDa
     const [quizTitle, setQuizTitle] = useState("");
     const [quizPrompt, setQuizPrompt] = useState("");
     const [defaultPrompt, setDefaultPrompt] = useState("");
-    const [questions, setQuestions] = useState([{ id: 1, value: "", options: [""] }]);
+    const [questions, setQuestions] = useState([{ id: 1, value: "", options: [""], random: false }]);
     const MAX_QUESTIONS = 5;
 
     // Fetch default prompt on component mount
@@ -34,7 +34,8 @@ export const QuizModal = ({ visible, onHide, onSave, editMode = false, initialDa
                 const formattedQuestions = initialData.steps.map((step, index) => ({
                     id: parseInt(step.id) || index + 1,
                     value: step.texto || "",
-                    options: step.opciones && step.opciones.length > 0 ? step.opciones : [""]
+                    options: step.opciones && step.opciones.length > 0 ? step.opciones : [""],
+                    random: step.random || false
                 }));
                 setQuestions(formattedQuestions);
             }
@@ -42,14 +43,14 @@ export const QuizModal = ({ visible, onHide, onSave, editMode = false, initialDa
             // Reset form for create mode
             setQuizTitle("");
             setQuizPrompt("");
-            setQuestions([{ id: 1, value: "", options: [""] }]);
+            setQuestions([{ id: 1, value: "", options: [""], random: false }]);
         }
     }, [editMode, initialData, visible]);
 
     const addQuestion = () => {
         if (questions.length < MAX_QUESTIONS) {
             const newId = Math.max(...questions.map(q => q.id)) + 1;
-            setQuestions(prev => [...prev, { id: newId, value: "", options: [""] }]);
+            setQuestions(prev => [...prev, { id: newId, value: "", options: [""], random: false }]);
         }
     };
 
@@ -63,6 +64,14 @@ export const QuizModal = ({ visible, onHide, onSave, editMode = false, initialDa
         setQuestions(prev => 
             prev.map(question => 
                 question.id === id ? { ...question, value } : question
+            )
+        );
+    };
+
+    const updateQuestionRandom = (id, random) => {
+        setQuestions(prev => 
+            prev.map(question => 
+                question.id === id ? { ...question, random } : question
             )
         );
     };
@@ -107,7 +116,7 @@ export const QuizModal = ({ visible, onHide, onSave, editMode = false, initialDa
             // Only reset form when creating new quiz
             setQuizTitle("");
             setQuizPrompt("");
-            setQuestions([{ id: 1, value: "", options: [""] }]);
+            setQuestions([{ id: 1, value: "", options: [""], random: false }]);
         }
         onHide();
     };
@@ -122,7 +131,8 @@ export const QuizModal = ({ visible, onHide, onSave, editMode = false, initialDa
                     step: idx + 1,
                     id: String(q.id),
                     texto: q.value,
-                    opciones: q.options.filter(opt => opt.trim())
+                    opciones: q.options.filter(opt => opt.trim()),
+                    random: q.random || false
                 }))
         };
         
@@ -196,6 +206,20 @@ export const QuizModal = ({ visible, onHide, onSave, editMode = false, initialDa
                             placeholder={`Ingresa la pregunta ${index + 1}...`}
                             className="question-input"
                         />
+                        
+                        {/* Random flag section */}
+                        <div className="question-random-section">
+                            <label className="random-checkbox-label">
+                                <input
+                                    type="checkbox"
+                                    checked={question.random || false}
+                                    onChange={(e) => updateQuestionRandom(question.id, e.target.checked)}
+                                    className="random-checkbox"
+                                />
+                                <i className="pi pi-refresh" style={{ marginLeft: '0.5rem', marginRight: '0.5rem' }}></i>
+                                Ordenar opciones aleatoriamente
+                            </label>
+                        </div>
                         
                         {/* Options section */}
                         <div className="question-options">

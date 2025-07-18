@@ -246,6 +246,27 @@
   transform: scaleY(1);
 }
 
+.navigation-item.answered {
+  background: #10b981;
+  color: white;
+  border-color: #059669;
+}
+
+.navigation-item.answered:hover {
+  background: #059669;
+  color: white;
+}
+
+.navigation-item.answered::before {
+  background: #047857;
+}
+
+.navigation-item.active.answered {
+  background: #065f46;
+  color: white;
+  border-color: #047857;
+}
+
 .navigation-item.active:hover {
   background: var(--primary-hover-color);
   transform: translateX(0);
@@ -272,11 +293,11 @@
 
 /* Animaciones de entrada */
 .question-card {
-  animation: slideInLeft 0.3s ease-out;
+  animation: slideInRight 0.3s ease-out;
 }
 
 .navigation-card {
-  animation: slideInRight 0.3s ease-out;
+  animation: slideInLeft 0.3s ease-out;
 }
 
 @keyframes slideInLeft {

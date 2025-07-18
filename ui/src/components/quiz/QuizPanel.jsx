@@ -15,15 +15,15 @@ export const QuizPanel = () => {
       documentId: '1',
       tema: 'Onboarding de Nuevos Talentos',
       steps: [
-        { step: 1, id: '1', texto: 'Pregunta 1', opciones: [] },
-        { step: 2, id: '2', texto: 'Pregunta 2', opciones: [] }
+        { step: 1, id: '1', texto: 'Pregunta 1', opciones: [], random: true },
+        { step: 2, id: '2', texto: 'Pregunta 2', opciones: [], random: false }
       ]
     },
     {
       documentId: '2',
       tema: 'Evaluación de Habilidades Técnicas',
       steps: [
-        { step: 1, id: '1', texto: 'Pregunta A', opciones: [] }
+        { step: 1, id: '1', texto: 'Pregunta A', opciones: [], random: false }
       ]
     }
   ].map(adaptQuizDefinition);

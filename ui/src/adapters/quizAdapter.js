@@ -4,7 +4,8 @@ export function adaptQuizDefinition(apiQuiz) {
     step: s.step ?? idx + 1,
     id: s.id ?? `q${idx + 1}`,
     texto: s.texto ?? s.value ?? '',
-    opciones: s.opciones ?? s.options ?? []
+    opciones: s.opciones ?? s.options ?? [],
+    random: s.random ?? false
   }));
 
   return {

@@ -34,7 +34,14 @@ export const QuizDetail = ({ quiz, onEdit }) => {
       <h4>Preguntas:</h4>
       {quiz.steps.map((step) => (
         <div key={step.id} className="quiz-step">
-          <h5>Pregunta {step.step}: {step.texto}</h5>
+          <h5>
+            Pregunta {step.step}: {step.texto}
+            {step.random && (
+              <span className="random-indicator" title="Opciones en orden aleatorio">
+                <i className="pi pi-refresh" style={{ marginLeft: '0.5rem', color: '#10b981' }}></i>
+              </span>
+            )}
+          </h5>
           {step.opciones && step.opciones.length > 0 && (
             <div className="quiz-options">
               <h6>Opciones:</h6>

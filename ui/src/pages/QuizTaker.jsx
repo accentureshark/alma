@@ -364,7 +364,7 @@ const QuizTaker = () => {
                 />
               </div>
             }
-            style={{ width: '40vw', minWidth: 300, maxWidth: 600 }}
+            style={{ width: '60vw', minWidth: 500, maxWidth: 800 }}
             modal
             closable={true}
         >

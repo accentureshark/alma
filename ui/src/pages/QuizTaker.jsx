@@ -9,6 +9,7 @@ import { Header } from '../components/layout/Header';
 import { CustomButton } from '../components/ui/CustomButton';
 import { TextareaField } from '../components/ui/TextareaField';
 import { CustomCard } from '../components/ui/CustomCard';
+import { ProcessingTimer } from '../components/ui/ProcessingTimer';
 
 // Datos de ejemplo (pueden eliminarse si solo usas los del backend)
 const exampleQuizzes = [
@@ -197,13 +198,18 @@ const QuizTaker = () => {
             />
         )}
         {currentQuestionIndex === quiz.steps.length - 1 && (
-            <CustomButton
-                label={isProcessingLlm ? "Procesando..." : "Enviar"}
-                icon={isProcessingLlm ? "pi pi-spin pi-spinner" : "pi pi-check"}
-                onClick={handleSubmitQuiz}
-                className="p-button-success"
-                disabled={!allQuestionsAnswered || isProcessingLlm}
-            />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'flex-end' }}>
+              <CustomButton
+                  label={isProcessingLlm ? "Procesando..." : "Enviar"}
+                  icon={isProcessingLlm ? "pi pi-spin pi-spinner" : "pi pi-check"}
+                  onClick={handleSubmitQuiz}
+                  className="p-button-success"
+                  disabled={!allQuestionsAnswered || isProcessingLlm}
+              />
+              {isProcessingLlm && (
+                <ProcessingTimer isActive={isProcessingLlm} className="compact-timer" />
+              )}
+            </div>
         )}
       </div>
   );
@@ -323,9 +329,15 @@ const QuizTaker = () => {
             {isProcessingLlm && (
               <div className="processing-section">
                 <Divider />
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <i className="pi pi-spin pi-spinner" />
-                  <span>Analizando tus respuestas...</span>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <i className="pi pi-spin pi-spinner" />
+                    <span>Analizando tus respuestas...</span>
+                  </div>
+                  <ProcessingTimer isActive={isProcessingLlm} />
+                  <div style={{ fontSize: '0.85rem', color: '#64748b', fontStyle: 'italic' }}>
+                    El análisis puede tardar varios segundos. Por favor, mantén la paciencia.
+                  </div>
                 </div>
               </div>
             )}
@@ -336,29 +348,38 @@ const QuizTaker = () => {
             onHide={() => setShowConfirmation(false)}
             header="Confirmar envío"
             footer={
-              <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+              <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', padding: '0.5rem 0' }}>
                 <CustomButton
                     label="Cancelar"
                     icon="pi pi-times"
                     severity="secondary"
                     onClick={() => setShowConfirmation(false)}
+                    className="p-button-outlined"
                 />
                 <CustomButton
                     label="Confirmar y enviar"
                     icon="pi pi-check"
-                    className="p-button-success"
+                    severity="success"
                     onClick={handleConfirmSubmit}
                 />
               </div>
             }
             style={{ width: '40vw', minWidth: 300, maxWidth: 600 }}
             modal
+            closable={true}
         >
-          <div style={{ padding: "1rem" }}>
-            <p>¿Estás seguro de que quieres enviar tu quiz para análisis?</p>
-            <p style={{ color: '#64748b', fontSize: '0.9rem' }}>
-              Una vez enviado, tus respuestas serán analizadas por el sistema de inteligencia artificial.
-            </p>
+          <div style={{ padding: "1rem 0" }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', marginBottom: '1rem' }}>
+              <i className="pi pi-question-circle" style={{ color: '#f59e0b', fontSize: '1.5rem', marginTop: '0.1rem' }} />
+              <div>
+                <p style={{ margin: '0 0 0.5rem 0', fontWeight: '500' }}>
+                  ¿Estás seguro de que quieres enviar tu quiz para análisis?
+                </p>
+                <p style={{ color: '#64748b', fontSize: '0.9rem', margin: 0 }}>
+                  Una vez enviado, tus respuestas serán analizadas por el sistema de inteligencia artificial.
+                </p>
+              </div>
+            </div>
           </div>
         </Dialog>
       </div>

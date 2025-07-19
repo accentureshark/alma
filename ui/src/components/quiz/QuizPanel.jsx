@@ -7,8 +7,10 @@ import { QuizDetail } from "./QuizDetail";
 import { CustomButton } from '../ui/CustomButton';
 import { CustomCard } from '../ui/CustomCard';
 import { adaptQuizDefinition } from '../../adapters/quizAdapter';
+import { useAuth } from '../../contexts/AuthContext'; // Importa el contexto de autenticación
 
 export const QuizPanel = () => {
+  const { user } = useAuth(); // Obtiene el usuario autenticado
 
   const initialQuizzes = [
     {
@@ -54,7 +56,7 @@ export const QuizPanel = () => {
   const handleSaveQuiz = async (quizData) => {
     try {
       if (editMode && editingQuiz) {
-        // Update existing quiz
+        // Actualiza quiz existente
         const baseUrl = import.meta.env.VITE_API_URL || '/api';
         const response = await fetch(`${baseUrl}/quiz/${editingQuiz.documentId}`, {
           method: 'PUT',
@@ -63,11 +65,11 @@ export const QuizPanel = () => {
           },
           body: JSON.stringify(quizData)
         });
-        
+
         if (response.ok) {
           const updatedQuiz = await response.json();
           const adapted = adaptQuizDefinition(updatedQuiz);
-          setQuizzes(prev => prev.map(quiz => 
+          setQuizzes(prev => prev.map(quiz =>
             quiz.documentId === editingQuiz.documentId ? adapted : quiz
           ));
           setSelectedQuiz(adapted);
@@ -75,11 +77,11 @@ export const QuizPanel = () => {
           console.error('Error updating quiz');
         }
       } else {
-        // Create new quiz
+        // Crea nuevo quiz
         const adapted = adaptQuizDefinition({ ...quizData, documentId: `${Date.now()}` });
         setQuizzes([...quizzes, adapted]);
       }
-      
+
       setModalVisible(false);
       setEditMode(false);
       setEditingQuiz(null);
@@ -104,7 +106,6 @@ export const QuizPanel = () => {
     return (
       <div className="quiz-list-item" onClick={() => setSelectedQuiz(quiz)}>
         <div className="quiz-item-info">
-
           <h5>{quiz.tema}</h5>
           <span>{quiz.steps.length} preguntas</span>
         </div>
@@ -113,34 +114,36 @@ export const QuizPanel = () => {
     );
   };
 
-return (
-  <div className="quiz-panel-container">
-    <CustomCard className="quiz-list-card">
-      <div className="quiz-panel-header">
-        <h2 style={{ display: 'inline-block', marginRight: '10px' }}>Listado de Quiz</h2>
-        <CustomButton
-          label="Crear Quiz"
-          icon="pi pi-plus"
-          severity="primary"
-          onClick={handleCreateQuiz}
-        />
-      </div>
-      <DataView className="quiz-list" value={quizzes} itemTemplate={itemTemplate} />
-    </CustomCard>
-    <CustomCard title="Detalles del Quiz" className="quiz-detail-card">
-      <QuizDetail quiz={selectedQuiz} onEdit={handleEditQuiz} />
-    </CustomCard>
-    <QuizModal
-      visible={modalVisible}
-      onHide={() => {
-        setModalVisible(false);
-        setEditMode(false);
-        setEditingQuiz(null);
-      }}
-      onSave={handleSaveQuiz}
-      editMode={editMode}
-      initialData={editingQuiz}
-    />
-  </div>
-);
+  return (
+    <div className="quiz-panel-container">
+      <CustomCard className="quiz-list-card">
+        <div className="quiz-panel-header">
+          <h2 style={{ display: 'inline-block', marginRight: '10px' }}>Listado de Quiz</h2>
+          {user?.isAdmin && (
+            <CustomButton
+              label="Crear Quiz"
+              icon="pi pi-plus"
+              severity="primary"
+              onClick={handleCreateQuiz}
+            />
+          )}
+        </div>
+        <DataView className="quiz-list" value={quizzes} itemTemplate={itemTemplate} />
+      </CustomCard>
+      <CustomCard title="Detalles del Quiz" className="quiz-detail-card">
+        <QuizDetail quiz={selectedQuiz} onEdit={handleEditQuiz} user={user} />
+      </CustomCard>
+      <QuizModal
+        visible={modalVisible}
+        onHide={() => {
+          setModalVisible(false);
+          setEditMode(false);
+          setEditingQuiz(null);
+        }}
+        onSave={handleSaveQuiz}
+        editMode={editMode}
+        initialData={editingQuiz}
+      />
+    </div>
+  );
 }

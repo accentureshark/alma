@@ -67,3 +67,36 @@ body {
 .gap-2 { gap: 0.5rem; }
 .gap-3 { gap: 1rem; }
 .gap-4 { gap: 1.5rem; }
+
+.quiz-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.quiz-detail-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.quiz-detail-actions .p-button {
+  display: inline-flex;
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Para que el contenido no se achique en tarjetas */
+.quiz-detail-container {
+  width: 100%;
+}
+
+.quiz-detail-card .p-card-body {
+  width: 100%;
+}
+
+
+

@@ -99,4 +99,39 @@ body {
 }
 
 
+/* Distribuye listado y detalle en columnas */
+.quiz-panel-grid {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.quiz-list-card {
+  flex: 1 1 45%;
+  min-width: 300px;
+}
+
+.quiz-detail-card {
+  flex: 1 1 50%;
+  min-width: 300px;
+}
+
+/* Mejora visual de TabView */
+.p-tabview .p-tabview-nav {
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background-color: #f0f0f0;
+  border-bottom: 2px solid #ccc;
+}
+
+.p-tabview .p-tabview-nav li {
+  margin-right: 1rem;
+  font-weight: 500;
+}
+
+.p-tabview .p-tabview-nav-link {
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.5rem 0.5rem 0 0;
+}
 

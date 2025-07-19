@@ -1,34 +1,20 @@
 import '../../styles/quiz.css'
 
+import { TabView, TabPanel } from 'primereact/tabview';
 import { useState, useEffect } from "react";
 import { DataView } from 'primereact/dataview';
 import { QuizModal } from "../ui/QuizModal";
 import { QuizDetail } from "./QuizDetail";
+import { QuizResults } from "./QuizResults";
 import { CustomButton } from '../ui/CustomButton';
 import { CustomCard } from '../ui/CustomCard';
 import { adaptQuizDefinition } from '../../adapters/quizAdapter';
-import { useAuth } from '../../contexts/AuthContext'; // Importa el contexto de autenticación
+import { useAuth } from '../../contexts/AuthContext';
 
 export const QuizPanel = () => {
-  const { user } = useAuth(); // Obtiene el usuario autenticado
+  const { user } = useAuth();
 
-  const initialQuizzes = [
-    {
-      documentId: '1',
-      tema: 'Onboarding de Nuevos Talentos',
-      steps: [
-        { step: 1, id: '1', texto: 'Pregunta 1', opciones: [], random: true },
-        { step: 2, id: '2', texto: 'Pregunta 2', opciones: [], random: false }
-      ]
-    },
-    {
-      documentId: '2',
-      tema: 'Evaluación de Habilidades Técnicas',
-      steps: [
-        { step: 1, id: '1', texto: 'Pregunta A', opciones: [], random: false }
-      ]
-    }
-  ].map(adaptQuizDefinition);
+  const initialQuizzes = [];
 
   const [quizzes, setQuizzes] = useState(initialQuizzes);
   const [selectedQuiz, setSelectedQuiz] = useState(null);
@@ -43,9 +29,9 @@ export const QuizPanel = () => {
         const res = await fetch(`${baseUrl}/quiz/list`);
         const ids = await res.json();
         const defs = await Promise.all(
-          ids.map(id => fetch(`${baseUrl}/quiz/${id}`).then(r => r.json()))
+            ids.map(id => fetch(`${baseUrl}/quiz/${id}`).then(r => r.json()))
         );
-        setQuizzes(defs);
+        setQuizzes(defs.map(adaptQuizDefinition));
       } catch (err) {
         console.error('Error loading quizzes', err);
       }
@@ -55,31 +41,31 @@ export const QuizPanel = () => {
 
   const handleSaveQuiz = async (quizData) => {
     try {
+      const baseUrl = import.meta.env.VITE_API_URL || '/api';
+
       if (editMode && editingQuiz) {
-        // Actualiza quiz existente
-        const baseUrl = import.meta.env.VITE_API_URL || '/api';
         const response = await fetch(`${baseUrl}/quiz/${editingQuiz.documentId}`, {
           method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(quizData)
         });
 
         if (response.ok) {
           const updatedQuiz = await response.json();
           const adapted = adaptQuizDefinition(updatedQuiz);
-          setQuizzes(prev => prev.map(quiz =>
-            quiz.documentId === editingQuiz.documentId ? adapted : quiz
-          ));
+          setQuizzes(prev =>
+              prev.map(q => q.documentId === adapted.documentId ? adapted : q)
+          );
           setSelectedQuiz(adapted);
         } else {
           console.error('Error updating quiz');
         }
       } else {
-        // Crea nuevo quiz
-        const adapted = adaptQuizDefinition({ ...quizData, documentId: `${Date.now()}` });
-        setQuizzes([...quizzes, adapted]);
+        const adapted = adaptQuizDefinition({
+          ...quizData,
+          documentId: `${Date.now()}`
+        });
+        setQuizzes(prev => [...prev, adapted]);
       }
 
       setModalVisible(false);
@@ -102,8 +88,7 @@ export const QuizPanel = () => {
     setModalVisible(true);
   };
 
-  const itemTemplate = (quiz) => {
-    return (
+  const itemTemplate = (quiz) => (
       <div className="quiz-list-item" onClick={() => setSelectedQuiz(quiz)}>
         <div className="quiz-item-info">
           <h5>{quiz.tema}</h5>
@@ -111,39 +96,51 @@ export const QuizPanel = () => {
         </div>
         <CustomButton icon="pi pi-chevron-right" className="p-button-rounded p-button-text" severity="secondary" />
       </div>
-    );
-  };
+  );
 
   return (
-    <div className="quiz-panel-container">
-      <CustomCard className="quiz-list-card">
-        <div className="quiz-panel-header">
-          <h2 style={{ display: 'inline-block', marginRight: '10px' }}>Listado de Quiz</h2>
-          {user?.isAdmin && (
-            <CustomButton
-              label="Crear Quiz"
-              icon="pi pi-plus"
-              severity="primary"
-              onClick={handleCreateQuiz}
+      <div className="quiz-panel-container">
+        <TabView>
+          <TabPanel header="Gestión de Quizzes" leftIcon="pi pi-cog">
+            <div className="quiz-panel-grid">
+              <CustomCard className="quiz-list-card">
+                <div className="quiz-panel-header">
+                  <h2 style={{ display: 'inline-block', marginRight: '10px' }}>Listado de Quiz</h2>
+                  {user?.isAdmin && (
+                      <CustomButton
+                          label="Crear Quiz"
+                          icon="pi pi-plus"
+                          severity="primary"
+                          onClick={handleCreateQuiz}
+                      />
+                  )}
+                </div>
+                <DataView className="quiz-list" value={quizzes} itemTemplate={itemTemplate} />
+              </CustomCard>
+
+              <CustomCard title="Detalles del Quiz" className="quiz-detail-card">
+                <QuizDetail quiz={selectedQuiz} onEdit={handleEditQuiz} user={user} />
+              </CustomCard>
+            </div>
+
+            <QuizModal
+                visible={modalVisible}
+                onHide={() => {
+                  setModalVisible(false);
+                  setEditMode(false);
+                  setEditingQuiz(null);
+                }}
+                onSave={handleSaveQuiz}
+                editMode={editMode}
+                initialData={editingQuiz}
             />
-          )}
-        </div>
-        <DataView className="quiz-list" value={quizzes} itemTemplate={itemTemplate} />
-      </CustomCard>
-      <CustomCard title="Detalles del Quiz" className="quiz-detail-card">
-        <QuizDetail quiz={selectedQuiz} onEdit={handleEditQuiz} user={user} />
-      </CustomCard>
-      <QuizModal
-        visible={modalVisible}
-        onHide={() => {
-          setModalVisible(false);
-          setEditMode(false);
-          setEditingQuiz(null);
-        }}
-        onSave={handleSaveQuiz}
-        editMode={editMode}
-        initialData={editingQuiz}
-      />
-    </div>
+          </TabPanel>
+
+
+          <TabPanel header="Resultados de Quiz" leftIcon="pi pi-chart-bar">
+            <QuizResults quizzes={quizzes} />
+          </TabPanel>
+        </TabView>
+      </div>
   );
-}
+};

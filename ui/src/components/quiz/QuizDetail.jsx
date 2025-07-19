@@ -18,42 +18,27 @@ export const QuizDetail = ({ quiz, onEdit }) => {
         window.open(quizUrl, '_blank', 'noopener,noreferrer');
     };
 
-
     return (
         <div className="quiz-detail-container">
             <div className="quiz-detail-header">
                 <h3>{quiz.tema}</h3>
                 <div className="quiz-detail-actions">
-                    <button
+                    <CustomButton
+                        label="Editar"
+                        icon="pi pi-pencil"
                         onClick={() => onEdit && onEdit(quiz)}
-                        style={{
-                            backgroundColor: '#6c63ff',
-                            color: 'white',
-                            border: 'none',
-                            padding: '0.5rem 1rem',
-                            borderRadius: '5px',
-                            cursor: 'pointer'
-                        }}
-                    >
-                        Editar
-                    </button>
-                    <button
+                        severity="secondary"
+                        size="small"
+                    />
+                    <CustomButton
+                        label="Test"
+                        icon="pi pi-play"
                         onClick={handleTestQuiz}
-                        style={{
-                            backgroundColor: '#10b981',
-                            color: 'white',
-                            border: 'none',
-                            padding: '0.5rem 1rem',
-                            borderRadius: '5px',
-                            cursor: 'pointer'
-                        }}
-                    >
-                        Test
-                    </button>
+                        severity="success"
+                        size="small"
+                    />
                 </div>
             </div>
-
-
 
             {quiz.prompt && (
                 <div className="quiz-prompt-section">
@@ -69,8 +54,8 @@ export const QuizDetail = ({ quiz, onEdit }) => {
                         Pregunta {step.step}: {step.texto}
                         {step.random && (
                             <span className="random-indicator" title="Opciones en orden aleatorio">
-                                <i className="pi pi-refresh" style={{ marginLeft: '0.5rem', color: '#10b981' }}></i>
-                            </span>
+                <i className="pi pi-refresh" style={{ marginLeft: '0.5rem', color: '#10b981' }}></i>
+              </span>
                         )}
                     </h5>
                     {step.opciones && step.opciones.length > 0 && (

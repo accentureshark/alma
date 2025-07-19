@@ -115,58 +115,8 @@ const UserDashboard = () => {
                 <h2>Quizes Disponibles</h2>
                 <DataView value={quizzes} itemTemplate={quizItemTemplate} />
               </TabPanel>
-              <TabPanel header="Gestión de Quiz" leftIcon="pi pi-cog">
-                <div className="admin-quiz-management">
-                  <h2>Gestión de Quiz - Panel de Administración</h2>
-                  <p style={{ marginBottom: '1rem', color: '#666' }}>
-                    Crear, editar y administrar quizzes del sistema
-                  </p>
-                  <QuizPanel />
-                </div>
-              </TabPanel>
-              <TabPanel header="Resultados de Quiz" leftIcon="pi pi-chart-bar">
-                <div className="admin-results-section">
-                  <div className="admin-header">
-                    <h2>Resultados de Quiz - Panel de Administración</h2>
-                    <div className="admin-filters">
-                      <InputField
-                        value={filterUser}
-                        onChange={e => setFilterUser(e.target.value)}
-                        placeholder="Usuario"
-                        className="filter-input"
-                      />
-                      <select
-                        value={filterQuiz}
-                        onChange={e => setFilterQuiz(e.target.value)}
-                        className="filter-select"
-                      >
-                        <option value="">Todos los Quizzes</option>
-                        {quizzes.map(q => (
-                          <option key={q.documentId} value={q.documentId}>{q.tema}</option>
-                        ))}
-                      </select>
-                      <CustomButton
-                        label="Filtrar"
-                        icon="pi pi-search"
-                        onClick={loadQuizResults}
-                        loading={loading}
-                      />
-                      <CustomButton
-                        label="Actualizar"
-                        icon="pi pi-refresh"
-                        onClick={() => { setFilterUser(''); setFilterQuiz(''); loadQuizResults(); }}
-                        loading={loading}
-                        severity="secondary"
-                      />
-                    </div>
-                  </div>
-                  <DataView 
-                    value={quizResults} 
-                    itemTemplate={resultItemTemplate}
-                    emptyMessage="No hay resultados disponibles. Haz clic en 'Actualizar Resultados' para cargar."
-                  />
-                </div>
-              </TabPanel>
+              
+
             </TabView>
           ) : (
             <>

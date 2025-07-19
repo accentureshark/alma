@@ -63,6 +63,20 @@
   margin-top: 1rem;
 }
 
+/* Admin Quiz Management Section */
+.admin-quiz-management {
+  margin-top: 1rem;
+}
+
+.admin-quiz-management h2 {
+  margin-bottom: 0.5rem;
+}
+
+.admin-quiz-management p {
+  margin-bottom: 1.5rem;
+  font-style: italic;
+}
+
 .admin-header {
   display: flex;
   justify-content: space-between;

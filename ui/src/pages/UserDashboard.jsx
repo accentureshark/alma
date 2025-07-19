@@ -6,6 +6,7 @@ import { TabView, TabPanel } from 'primereact/tabview';
 import { Header } from '../components/layout/Header';
 import { CustomButton } from '../components/ui/CustomButton';
 import { useAuth } from '../contexts/AuthContext';
+import { QuizPanel } from '../components/quiz/QuizPanel';
 
 const UserDashboard = () => {
   const navigate = useNavigate();
@@ -97,7 +98,16 @@ const UserDashboard = () => {
                 <h2>Quizes Disponibles</h2>
                 <DataView value={quizzes} itemTemplate={quizItemTemplate} />
               </TabPanel>
-              <TabPanel header="Resultados de Quiz (Admin)" leftIcon="pi pi-chart-bar">
+              <TabPanel header="Gestión de Quiz" leftIcon="pi pi-cog">
+                <div className="admin-quiz-management">
+                  <h2>Gestión de Quiz - Panel de Administración</h2>
+                  <p style={{ marginBottom: '1rem', color: '#666' }}>
+                    Crear, editar y administrar quizzes del sistema
+                  </p>
+                  <QuizPanel />
+                </div>
+              </TabPanel>
+              <TabPanel header="Resultados de Quiz" leftIcon="pi pi-chart-bar">
                 <div className="admin-results-section">
                   <div className="admin-header">
                     <h2>Resultados de Quiz - Panel de Administración</h2>

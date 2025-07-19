@@ -21,3 +21,9 @@ CREATE TABLE IF NOT EXISTS quiz.quiz_response (
                                                   calificacion DECIMAL(5,2),
                                                   created_at TIMESTAMP DEFAULT now()
 );
+CREATE TABLE IF NOT EXISTS quiz.users (
+    id UUID PRIMARY KEY,
+    email TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL,
+    administrador BOOLEAN DEFAULT FALSE
+);

@@ -22,9 +22,6 @@ import java.util.List;
 public class QuizController {
 
     private static final Logger logger = LoggerFactory.getLogger(QuizController.class);
-
-
-
     private final QuizService quizService;
 
     public QuizController(QuizService quizService) {

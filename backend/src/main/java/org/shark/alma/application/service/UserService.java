@@ -21,11 +21,17 @@ public class UserService {
         return Optional.empty();
     }
 
+
     public Optional<User> findByEmail(String email) {
-        return userRepository.findByEmail(email);
+        return userRepository.findByEmail(email.trim());
     }
 
     public User saveUser(User user) {
         return userRepository.save(user);
+    }
+
+    // Nuevo método para comparar contraseñas en texto plano
+    public boolean checkPassword(User user, String rawPassword) {
+        return user.getPassword().equals(rawPassword);
     }
 }

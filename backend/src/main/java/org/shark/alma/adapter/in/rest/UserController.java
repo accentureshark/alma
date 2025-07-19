@@ -8,6 +8,8 @@ import org.shark.alma.domain.model.user.UserDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 
@@ -16,28 +18,46 @@ import java.util.Optional;
 @CrossOrigin(origins = "*")
 public class UserController {
 
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+
     @Autowired
     private UserService userService;
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
-        Optional<User> userOpt = userService.authenticateUser(loginRequest.getEmail(), loginRequest.getPassword());
-        
-        if (userOpt.isPresent()) {
-            User user = userOpt.get();
-            UserDto userDto = UserDto.fromUser(user);
-            return ResponseEntity.ok(new LoginResponse(true, "Login successful", userDto));
-        } else {
+        String email = loginRequest.getEmail().trim();
+        String password = loginRequest.getPassword().trim();
+        logger.info("Intentando login para email: [{}]", email);
+        logger.info("Intentando login para password: [{}]", password);
+        Optional<User> userOpt = userService.findByEmail(email);
+
+        if (userOpt.isEmpty()) {
+            logger.warn("Login fallido: usuario no encontrado para email: [{}]", email);
             return ResponseEntity.status(401).body(new LoginResponse(false, "Invalid credentials"));
         }
+
+        User user = userOpt.get();
+        boolean passwordOk = userService.checkPassword(user, password);
+        if (!passwordOk) {
+            logger.warn("Login fallido: contraseña incorrecta para email: {}. Contraseña ingresada: {}", email, password);
+            logger.info("Contraseña real (hash): {}", user.getPassword());
+            return ResponseEntity.status(401).body(new LoginResponse(false, "Invalid credentials"));
+        }
+
+        logger.info("Login exitoso para email: {}", email);
+        UserDto userDto = UserDto.fromUser(user);
+        return ResponseEntity.ok(new LoginResponse(true, "Login successful", userDto));
     }
 
     @GetMapping("/user/{email}")
     public ResponseEntity<UserDto> getUserByEmail(@PathVariable String email) {
+        logger.info("Buscando usuario por email: {}", email);
         Optional<User> userOpt = userService.findByEmail(email);
         if (userOpt.isPresent()) {
+            logger.info("Usuario encontrado: {}", email);
             return ResponseEntity.ok(UserDto.fromUser(userOpt.get()));
         } else {
+            logger.warn("Usuario no encontrado: {}", email);
             return ResponseEntity.notFound().build();
         }
     }

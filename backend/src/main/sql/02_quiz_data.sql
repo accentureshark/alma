@@ -33,3 +33,9 @@ INSERT INTO quiz.quiz_definition (
              '2025-07-02T21:30:29.170983'
          )
     ON CONFLICT (document_id) DO NOTHING;
+
+-- Usuarios iniciales para desarrollo
+
+INSERT INTO quiz.users (id, email, password, administrador) VALUES ('00000000-0000-0000-0000-000000000001', 'admin@alma.com', 'admin123', true) ON CONFLICT (email) DO NOTHING;
+INSERT INTO quiz.users (id, email, password, administrador) VALUES ('00000000-0000-0000-0000-000000000002', 'user@alma.com', 'user123', false) ON CONFLICT (email) DO NOTHING;
+INSERT INTO quiz.users (id, email, password, administrador) VALUES ('00000000-0000-0000-0000-000000000003', 'test@alma.com', 'test123', false) ON CONFLICT (email) DO NOTHING;

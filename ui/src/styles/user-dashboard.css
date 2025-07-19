@@ -35,7 +35,6 @@
   margin-bottom: 0.5rem;
 }
 
-
 .quiz-item-info h5 {
   margin: 0;
   font-size: 1.1rem;
@@ -59,6 +58,99 @@
   transform: translateY(-1px);
 }
 
+/* Admin Results Section */
+.admin-results-section {
+  margin-top: 1rem;
+}
+
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: var(--card-background);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.admin-header h2 {
+  margin: 0;
+  color: var(--primary-color);
+}
+
+.quiz-result-item {
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  background: var(--card-background);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.result-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.result-info h6 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  grid-column: 1 / -1;
+}
+
+.result-info p {
+  margin: 0.25rem 0;
+  color: var(--text-color);
+}
+
+.result-details {
+  margin-top: 1rem;
+}
+
+.result-details details {
+  margin-bottom: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.result-details summary {
+  padding: 0.5rem 1rem;
+  background: var(--background-color);
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--primary-color);
+}
+
+.result-details summary:hover {
+  background: var(--primary-hover-color);
+  color: white;
+}
+
+.result-responses, .result-llm {
+  padding: 1rem;
+  background: var(--card-background);
+}
+
+.result-responses p {
+  margin: 0.5rem 0;
+  padding: 0.25rem 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.result-llm p {
+  margin: 0;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .user-dashboard-container {
@@ -80,5 +172,19 @@
   .user-dashboard-list-item .p-button {
     width: 100%;
     justify-content: center;
+  }
+
+  .admin-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+
+  .admin-header .p-button {
+    width: 100%;
+  }
+
+  .result-info {
+    grid-template-columns: 1fr;
   }
 }

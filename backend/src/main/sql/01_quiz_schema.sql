@@ -18,5 +18,6 @@ CREATE TABLE IF NOT EXISTS quiz.quiz_response (
                                                   usuario TEXT NOT NULL,
                                                   respuestas JSONB NOT NULL,
                                                   resultado_inferencia TEXT,
+                                                  calificacion DECIMAL(5,2),
                                                   created_at TIMESTAMP DEFAULT now()
 );

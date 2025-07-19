@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.shark.alma.domain.model.QuizDefinition;
 import org.shark.alma.domain.model.QuizDefinitionEntity;
 import org.shark.alma.domain.model.QuizResponseRequest;
+import org.shark.alma.domain.model.QuizResult;
 import org.shark.alma.domain.port.out.QuizRepository;
 import org.shark.alma.domain.port.out.InferenceClient;
 import org.shark.alma.llm.LlmService;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -32,12 +34,14 @@ public class QuizService {
     private final QuizRepository quizRepository;
     private final InferenceClient inferenceClient;
     private final LlmService llmService;
+    private final QuizResultService quizResultService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public QuizService(QuizRepository quizRepository, InferenceClient inferenceClient, LlmService llmService) {
+    public QuizService(QuizRepository quizRepository, InferenceClient inferenceClient, LlmService llmService, QuizResultService quizResultService) {
         this.quizRepository = quizRepository;
         this.inferenceClient = inferenceClient;
         this.llmService = llmService;
+        this.quizResultService = quizResultService;
     }
 
     public void saveDefinition(QuizDefinition definition) {
@@ -125,7 +129,19 @@ public class QuizService {
                 prompt = getDefaultPrompt();
             }
 
-            return llmService.generate(prompt, context.toString());
+            String resultado = llmService.generate(prompt, context.toString());
+            
+            // Calculate score and save result
+            BigDecimal calificacion = quizResultService.calculateScore(resultado);
+            quizResultService.saveQuizResult(
+                request.getDocumentId(), 
+                request.getUsuario(), 
+                request.getRespuestas(), 
+                resultado, 
+                calificacion
+            );
+
+            return resultado;
 
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,

@@ -1,5 +1,6 @@
 
 import { createContext, useContext, useState, useEffect } from 'react';
+import { API_BASE_URL, API_ENDPOINTS } from '../config/auth';
 
 const AuthContext = createContext();
 
@@ -23,16 +24,35 @@ export const AuthProvider = ({ children }) => {
     setIsLoading(false);
   }, []);
 
-  const login = async (role) => {
+  const login = async (email, password) => {
     setIsLoading(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      const userData = { role };
-      setUser(userData);
-      localStorage.setItem('user', JSON.stringify(userData));
-      return { success: true };
+      const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.LOGIN}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        const userData = {
+          id: data.user.id,
+          email: data.user.email,
+          isAdmin: data.user.administrador,
+          role: data.user.administrador ? 'Admin' : 'User'
+        };
+        setUser(userData);
+        localStorage.setItem('user', JSON.stringify(userData));
+        return { success: true, user: userData };
+      } else {
+        return { success: false, error: data.message || 'Error en el servidor' };
+      }
     } catch (error) {
-      return { success: false, error: 'Error en el servidor' };
+      console.error('Login error:', error);
+      return { success: false, error: 'Error de conexión con el servidor' };
     } finally {
       setIsLoading(false);
     }

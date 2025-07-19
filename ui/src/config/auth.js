@@ -10,5 +10,8 @@ export const API_ENDPOINTS = {
   LOGIN: '/api/auth/login',
   LOGOUT: '/api/auth/logout',
   REFRESH: '/api/auth/refresh',
-  PROFILE: '/api/auth/profile'
+  PROFILE: '/api/auth/profile',
+  USER_BY_EMAIL: '/api/auth/user'
 };
+
+export const API_BASE_URL = 'http://localhost:8080';

@@ -493,6 +493,12 @@
     font-weight: 600;
 }
 
+.quiz-detail-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
 .edit-quiz-btn {
     display: flex;
     align-items: center;

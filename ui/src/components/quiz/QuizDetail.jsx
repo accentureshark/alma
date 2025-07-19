@@ -1,5 +1,12 @@
 
+import { useAuth } from '../../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { CustomButton } from '../ui/CustomButton';
+
 export const QuizDetail = ({ quiz, onEdit }) => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
   if (!quiz) {
     return (
       <div className="quiz-detail-container quiz-detail-placeholder">
@@ -8,20 +15,34 @@ export const QuizDetail = ({ quiz, onEdit }) => {
     );
   }
 
+  const handleTestQuiz = () => {
+    navigate(`/quiz/${quiz.documentId}`);
+  };
+
   return (
     <div className="quiz-detail-container">
       <div className="quiz-detail-header">
         <h3>{quiz.tema}</h3>
-        {onEdit && (
-          <button 
-            className="edit-quiz-btn"
-            onClick={() => onEdit(quiz)}
-            title="Editar quiz"
-          >
-            <i className="pi pi-pencil"></i>
-            Editar
-          </button>
-        )}
+        <div className="quiz-detail-actions">
+          {onEdit && (
+            <CustomButton 
+              label="Editar"
+              icon="pi pi-pencil"
+              onClick={() => onEdit(quiz)}
+              severity="secondary"
+              size="small"
+            />
+          )}
+          {user && user.isAdmin && (
+            <CustomButton 
+              label="Probar Quiz"
+              icon="pi pi-play"
+              onClick={handleTestQuiz}
+              severity="success"
+              size="small"
+            />
+          )}
+        </div>
       </div>
       
       {quiz.prompt && (

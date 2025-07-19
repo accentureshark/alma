@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 import java.util.UUID;
 
 @Entity
-@Table(name = "\"user\"", schema = "admin")
+@Table(name = "\"user\"")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,11 +19,14 @@ import java.util.UUID;
 public class User {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
     @Column(nullable = false, unique = true)
     private String email;
+
+    @Column(nullable = false)
+    private String password;
 
     @Column(nullable = false)
     private boolean administrador;

@@ -20,6 +20,7 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.lenient;
 
 @ExtendWith(MockitoExtension.class)
 class QuizServiceTest {
@@ -33,7 +34,9 @@ class QuizServiceTest {
     @Mock
     private LlmService llmService;
 
-    @InjectMocks
+    @Mock
+    private QuizResultService quizResultService;
+
     private QuizService quizService;
 
     private QuizDefinition testQuizDefinition;
@@ -43,6 +46,14 @@ class QuizServiceTest {
 
     @BeforeEach
     void setUp() throws Exception {
+        // Manually create the QuizService with mocked dependencies
+        quizService = new QuizService(quizRepository, inferenceClient, llmService, quizResultService);
+        
+        // Mock QuizResultService methods with lenient stubbing since they're not used in all tests
+        lenient().when(quizResultService.calculateScore(any(String.class))).thenReturn(java.math.BigDecimal.valueOf(8.5));
+        lenient().when(quizResultService.saveQuizResult(any(String.class), any(String.class), any(Map.class), any(String.class), any(java.math.BigDecimal.class)))
+                .thenReturn(null); // We don't need the returned QuizResult for these tests
+        
         QuizDefinition.QuizStep step1 = new QuizDefinition.QuizStep(
                 1, "step1", "¿Cuál es la capital de Francia?",
                 Arrays.asList("Madrid", "París", "Londres", "Roma"), false

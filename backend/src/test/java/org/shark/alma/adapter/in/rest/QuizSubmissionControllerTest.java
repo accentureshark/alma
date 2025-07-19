@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.shark.alma.application.service.QuizService;
+import org.shark.alma.application.service.QuizResultService;
 import org.shark.alma.domain.model.QuizResponseRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,12 +21,15 @@ class QuizSubmissionControllerTest {
     @Mock
     private QuizService quizService;
 
+    @Mock
+    private QuizResultService quizResultService;
+
     private QuizSubmissionController controller;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        controller = new QuizSubmissionController(quizService);
+        controller = new QuizSubmissionController(quizService, quizResultService);
     }
 
     @Test

@@ -93,6 +93,20 @@
   color: var(--primary-color);
 }
 
+.admin-filters {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.admin-filters .filter-input,
+.admin-filters .filter-select {
+  padding: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+}
+
 .quiz-result-item {
   display: flex;
   flex-direction: column;

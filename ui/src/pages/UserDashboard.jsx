@@ -5,6 +5,7 @@ import { DataView } from 'primereact/dataview';
 import { TabView, TabPanel } from 'primereact/tabview';
 import { Header } from '../components/layout/Header';
 import { CustomButton } from '../components/ui/CustomButton';
+import { InputField } from '../components/ui/InputField';
 import { useAuth } from '../contexts/AuthContext';
 import { QuizPanel } from '../components/quiz/QuizPanel';
 
@@ -14,6 +15,8 @@ const UserDashboard = () => {
   const [quizzes, setQuizzes] = useState([]);
   const [quizResults, setQuizResults] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [filterUser, setFilterUser] = useState('');
+  const [filterQuiz, setFilterQuiz] = useState('');
 
   useEffect(() => {
     const loadQuizzes = async () => {
@@ -34,12 +37,26 @@ const UserDashboard = () => {
 
   const loadQuizResults = async () => {
     if (!user?.isAdmin) return;
-    
+
     setLoading(true);
     try {
       const baseUrl = import.meta.env.VITE_API_URL;
-      const res = await fetch(`${baseUrl}/quiz/submission/results`);
-      const results = await res.json();
+      let results = [];
+
+      if (filterUser) {
+        const res = await fetch(`${baseUrl}/quiz/submission/results/user/${encodeURIComponent(filterUser)}`);
+        results = await res.json();
+        if (filterQuiz) {
+          results = results.filter(r => r.quizDocumentId === filterQuiz);
+        }
+      } else if (filterQuiz) {
+        const res = await fetch(`${baseUrl}/quiz/submission/results/quiz/${encodeURIComponent(filterQuiz)}`);
+        results = await res.json();
+      } else {
+        const res = await fetch(`${baseUrl}/quiz/submission/results`);
+        results = await res.json();
+      }
+
       setQuizResults(results);
     } catch (err) {
       console.error('Error loading quiz results', err);
@@ -111,12 +128,37 @@ const UserDashboard = () => {
                 <div className="admin-results-section">
                   <div className="admin-header">
                     <h2>Resultados de Quiz - Panel de Administración</h2>
-                    <CustomButton 
-                      label="Actualizar Resultados" 
-                      icon="pi pi-refresh" 
-                      onClick={loadQuizResults}
-                      loading={loading}
-                    />
+                    <div className="admin-filters">
+                      <InputField
+                        value={filterUser}
+                        onChange={e => setFilterUser(e.target.value)}
+                        placeholder="Usuario"
+                        className="filter-input"
+                      />
+                      <select
+                        value={filterQuiz}
+                        onChange={e => setFilterQuiz(e.target.value)}
+                        className="filter-select"
+                      >
+                        <option value="">Todos los Quizzes</option>
+                        {quizzes.map(q => (
+                          <option key={q.documentId} value={q.documentId}>{q.tema}</option>
+                        ))}
+                      </select>
+                      <CustomButton
+                        label="Filtrar"
+                        icon="pi pi-search"
+                        onClick={loadQuizResults}
+                        loading={loading}
+                      />
+                      <CustomButton
+                        label="Actualizar"
+                        icon="pi pi-refresh"
+                        onClick={() => { setFilterUser(''); setFilterQuiz(''); loadQuizResults(); }}
+                        loading={loading}
+                        severity="secondary"
+                      />
+                    </div>
                   </div>
                   <DataView 
                     value={quizResults} 

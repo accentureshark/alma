@@ -25,8 +25,7 @@ public class QuizResultEntity {
     @Column(name = "usuario", nullable = false, columnDefinition = "TEXT")
     private String usuario;
 
-    @Column(name = "respuestas", columnDefinition = "jsonb", nullable = false)
-    @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
+    @Column(name = "respuestas", columnDefinition = "TEXT", nullable = false)
     private String respuestas;
 
     @Column(name = "resultado_inferencia", columnDefinition = "TEXT")

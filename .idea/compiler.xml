@@ -15,10 +15,10 @@
         <processorPath useClasspath="false">
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.30/lombok-1.18.30.jar" />
         </processorPath>
+        <module name="alma" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="alma" target="17" />
       <module name="parent" target="1.5" />
     </bytecodeTargetLevel>
   </component>

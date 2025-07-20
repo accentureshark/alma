@@ -33,6 +33,6 @@
     
     <modules>
         <module>backend</module>
-        <module>mcp-client-backend</module>
+
     </modules>
 </project>

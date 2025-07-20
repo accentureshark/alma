@@ -1,0 +1,9 @@
+/home/runner/work/alma/alma/mcp-client-backend/src/main/java/org/shark/alma/mcp/McpClientApplication.java
+/home/runner/work/alma/alma/mcp-client-backend/src/main/java/org/shark/alma/mcp/config/WebConfig.java
+/home/runner/work/alma/alma/mcp-client-backend/src/main/java/org/shark/alma/mcp/controller/ChatController.java
+/home/runner/work/alma/alma/mcp-client-backend/src/main/java/org/shark/alma/mcp/controller/McpServerController.java
+/home/runner/work/alma/alma/mcp-client-backend/src/main/java/org/shark/alma/mcp/model/ChatMessage.java
+/home/runner/work/alma/alma/mcp-client-backend/src/main/java/org/shark/alma/mcp/model/McpRequest.java
+/home/runner/work/alma/alma/mcp-client-backend/src/main/java/org/shark/alma/mcp/model/McpServer.java
+/home/runner/work/alma/alma/mcp-client-backend/src/main/java/org/shark/alma/mcp/service/ChatService.java
+/home/runner/work/alma/alma/mcp-client-backend/src/main/java/org/shark/alma/mcp/service/McpServerService.java

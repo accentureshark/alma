@@ -1,0 +1,32 @@
+@startuml
+
+node "Usuario" as User
+node "Administrador" as Admin
+
+node "Frontend (React)" as React {
+  [Navegador Web]
+}
+
+node "Backend (Spring Boot)" as SpringBoot {
+  [API REST]
+}
+
+database "PostgreSQL" as DB {
+  [Tabla Quiz]
+  [Tabla Resultados]
+  [Tabla Usuarios]
+}
+
+node "LLM (Ollama)" as LLM {
+  [Modelo IA]
+}
+
+User --> React : Acceso vía navegador
+Admin --> React : Acceso vía navegador
+React --> SpringBoot : Solicitudes HTTP (REST)
+SpringBoot --> DB : Consultas SQL
+SpringBoot --> LLM : Solicitudes de inferencia
+LLM --> SpringBoot : Respuestas IA
+
+@enduml
+

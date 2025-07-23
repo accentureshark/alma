@@ -1,0 +1,50 @@
+@startuml
+
+!define RECTANGLE class
+skinparam rectangle {
+  BackgroundColor #F9F9F9
+  BorderColor #333
+}
+
+package "Frontend (React)" {
+  RECTANGLE "App.jsx" as App
+  RECTANGLE "components/" as Components
+  RECTANGLE "pages/" as Pages
+  RECTANGLE "adapters/" as AdaptersUI
+  RECTANGLE "models/" as ModelsUI
+  RECTANGLE "contexts/" as ContextsUI
+}
+
+package "Backend (Spring Boot)" {
+  RECTANGLE "QuizApplication.java" as QuizApp
+  RECTANGLE "adapter/" as AdapterBE
+  RECTANGLE "application/" as ApplicationBE
+  RECTANGLE "domain/" as DomainBE
+  RECTANGLE "infrastructure/" as InfraBE
+  RECTANGLE "llm/" as LlmBE
+  RECTANGLE "config/" as ConfigBE
+}
+
+RECTANGLE "PostgreSQL" as DB
+RECTANGLE "Ollama (IA)" as Ollama
+RECTANGLE "LangChain4j" as LangChain
+
+App --> Components
+App --> Pages
+Components --> AdaptersUI
+Pages --> ModelsUI
+App --> ContextsUI
+
+App ..> AdapterBE : REST API
+AdapterBE --> ApplicationBE
+ApplicationBE --> DomainBE
+ApplicationBE --> InfraBE
+InfraBE --> DB
+LlmBE --> Ollama
+LlmBE --> LangChain
+ApplicationBE --> LlmBE
+ConfigBE ..> AdapterBE
+ConfigBE ..> ApplicationBE
+
+@enduml
+

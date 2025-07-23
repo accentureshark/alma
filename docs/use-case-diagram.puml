@@ -1,0 +1,25 @@
+@startuml
+
+left to right direction
+
+actor Administrador
+actor Usuario
+
+rectangle "Sistema Alma" {
+  usecase "Crear/Editar Quiz" as UC1
+  usecase "Revisar Resultados" as UC2
+  usecase "Responder Quiz" as UC3
+  usecase "Ver Resultados Propios" as UC4
+  usecase "Gestionar Usuarios" as UC5
+}
+
+Administrador --> UC1
+Administrador --> UC2
+Administrador --> UC5
+Usuario --> UC3
+Usuario --> UC4
+UC3 --> UC4 : <<genera>>
+UC1 --> UC3 : <<habilita>>
+UC2 --> UC1 : <<depende de>>
+
+@enduml

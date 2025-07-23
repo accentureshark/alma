@@ -21,12 +21,16 @@ node "LLM (Ollama)" as LLM {
   [Modelo IA]
 }
 
+node "Microservicio Kai" as Kai {
+  [Gestión de Usuarios]
+}
+
 User --> React : Acceso vía navegador
 Admin --> React : Acceso vía navegador
 React --> SpringBoot : Solicitudes HTTP (REST)
-SpringBoot --> DB : Consultas SQL
+SpringBoot --> DB : Consultas SQL (Quiz, Resultados)
+SpringBoot --> Kai : Solicitudes REST (Usuarios)
 SpringBoot --> LLM : Solicitudes de inferencia
 LLM --> SpringBoot : Respuestas IA
 
 @enduml
-

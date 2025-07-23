@@ -2,51 +2,99 @@
 
 **AI Learning & Measurement Assistant**
 
-Alma es un proyecto que permite crear, almacenar y evaluar cualquier tipo de **quiz** de manera flexible. El backend escrito en Spring Boot gestiona las definiciones y respuestas de los cuestionarios en una base de datos PostgreSQL y, opcionalmente, interactúa con un modelo de lenguaje (LLM) para generar feedback automatizado.
+Alma es una plataforma completa para diseñar, responder y evaluar quizzes de forma flexible, incorporando inteligencia artificial para generar resultados y feedback personalizado. Es ideal para test de orientación, diagnósticos de conocimiento o selección de perfiles técnicos/gerenciales.
 
-## Características principales
+---
 
-- **Quizzes dinámicos**: las definiciones se almacenan en formato JSON, por lo que se pueden crear cuestionarios de cualquier tema sin modificar el código.
-- **Persistencia**: el motor utiliza PostgreSQL (con scripts de inicialización en `backend/src/main/sql`) para guardar tanto las definiciones como las respuestas de los usuarios.
-- **Interacción con LLM**: las respuestas pueden enviarse a un servicio de inferencia o a un modelo LLM local/externo mediante LangChain4j. Esto permite generar evaluaciones o explicaciones con IA.
-- **Prompt adaptable**: cada petición puede incluir un prompt personalizado que el LLM usará al analizar las respuestas. Si no se indica, el sistema utiliza un prompt por defecto.
-- **Arquitectura modular**: se sigue un estilo hexagonal que separa dominio, servicios y adaptadores. El frontend (React + Vite) se encuentra en la carpeta `ui`.
-- **Perfiles diferenciados**: la aplicación web cuenta con un perfil de **Administrador** para gestionar cuestionarios y otro de **Usuario** para resolverlos.
+## 🧠 Características principales
 
-## Estructura del repositorio
+- **Quizzes dinámicos**: se definen en JSON y pueden modificarse sin recompilar.
+- **Evaluación por IA (LLM)**: utiliza modelos como Ollama local o servicios externos a través de LangChain4j.
+- **Frontend en React**: interfaz para usuarios y administradores, moderna y responsiva.
+- **Backend Spring Boot**: arquitectura hexagonal, REST API, PostgreSQL y servicios de inferencia.
+- **Modularidad y escalabilidad**: separación clara entre dominios, puertos y adaptadores.
+- **Roles diferenciados**: usuarios pueden resolver quizzes; administradores pueden crearlos, editarlos y revisarlos.
+
+---
+
+## 📁 Estructura del proyecto
 
 ```
-/backend - Código de la API en Spring Boot
-/ui      - Aplicación web en React para responder o crear quizzes
+├── backend/           # Backend Java Spring Boot
+│   ├── src/main/java/org/shark/alma/
+│   │   ├── adapter/           # Adaptadores de entrada/salida
+│   │   ├── application/       # Lógica de aplicación
+│   │   ├── config/            # Configuración
+│   │   ├── domain/            # Entidades y lógica de dominio
+│   │   ├── infrastructure/    # Infraestructura y persistencia
+│   │   ├── llm/               # Integración con modelos IA
+│   │   └── QuizApplication.java
+│   ├── resources/             # Configuración y scripts SQL
+│   └── pom.xml                # Dependencias Maven
+├── ui/                # Frontend React
+│   ├── src/
+│   │   ├── components/        # Componentes reutilizables
+│   │   ├── pages/             # Vistas principales
+│   │   ├── adapters/          # Adaptadores de datos
+│   │   ├── models/            # Modelos de datos
+│   │   ├── context/           # Contextos globales
+│   │   └── styles/            # Estilos CSS
+│   ├── public/                # Recursos estáticos
+│   └── package.json           # Dependencias Node
+├── docker-compose.yml         # Orquestación de servicios
+├── Dockerfile.backend         # Imagen backend
+├── Dockerfile.frontend        # Imagen frontend
+├── Makefile                   # Comandos útiles
+└── README.md                  # Documentación principal
 ```
 
-El proyecto incluye un archivo `docker-compose.yml` que levanta tanto una instancia de PostgreSQL con los esquemas necesarios como un servicio de **Ollama**. Este último se utiliza para ejecutar localmente modelos de lenguaje que Alma emplea al generar feedback automatizado.
+---
 
-## Puesta en marcha rápida
+## 🚀 Guía rápida de inicio
 
-1. **Servicios Docker**
+1. Clona el repositorio y accede a la carpeta raíz.
+2. Inicia los servicios con Docker Compose:
    ```bash
-   docker compose up -d alma-db ollama
+   docker-compose up --build
    ```
-   Esto crea la BD "alma" con los scripts iniciales y pone en marcha el servicio de Ollama.
+3. Accede al frontend en `http://localhost:3000` y al backend en `http://localhost:8080`.
 
-2. **Backend**
-   ```bash
-   cd backend
-   mvn spring-boot:run
-   ```
-   El servidor quedará disponible en `http://localhost:8082`.
+---
 
-3. **Frontend**
-   ```bash
-   cd ui
-   npm install
-   npm run dev
-   ```
-   La interfaz se sirve por defecto en `http://localhost:5173`.
+## 🛠️ Principales dependencias
 
-Con ambos servicios ejecutándose podrás cargar definiciones de quiz mediante `/api/quiz/upload`, responderlos y recibir feedback generado por IA a través de `/api/quiz/response/llm`.
+- **Backend:** Spring Boot, PostgreSQL, LangChain4j, Ollama
+- **Frontend:** React, Vite, Zustand, TailwindCSS
 
-## Licencia
+---
 
-Este proyecto se distribuye bajo la [Licencia Apache 2.0](LICENSE).
+## 📌 Estado actual
+
+- Backend funcional con endpoints REST y conexión a PostgreSQL.
+- Frontend funcional con autenticación, panel de quizzes y resultados.
+- Integración básica con modelos IA (Ollama local).
+- Modularidad y separación de dominios implementada.
+- Listo para pruebas y ampliación de funcionalidades.
+
+---
+
+## 📊 Diagramas UML
+
+
+- **Diagrama de componentes:**
+  ![Diagrama de componentes](./docs/component-diagram.png)
+  - Muestra la arquitectura general del sistema, incluyendo los módulos principales de backend, frontend y las integraciones externas.
+- **Diagrama de casos de uso:**
+  ![Diagrama de casos de uso](./docs/use-case-diagram.png)
+  - Representa los actores (usuario, administrador) y sus interacciones con los casos de uso principales: gestión de quizzes, resultados y usuarios.
+- **Diagrama de despliegue:**
+  ![Diagrama de despliegue](./docs/deployment-diagram.png)
+  - Ilustra cómo se distribuyen los componentes en la infraestructura: frontend, backend, base de datos, microservicio Kai y la instancia de LLM (Ollama).
+
+Para visualizar los diagramas, abre los archivos PNG en la carpeta `docs/` o consulta las imágenes embebidas arriba.
+
+---
+
+## 📄 Licencia
+
+Este proyecto está bajo la licencia MIT.

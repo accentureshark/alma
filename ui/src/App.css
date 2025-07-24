@@ -135,3 +135,116 @@ body {
   border-radius: 0.5rem 0.5rem 0 0;
 }
 
+.quiz-detail-actions .p-button {
+  opacity: 1 !important;
+  visibility: visible !important;
+  color: #fff !important;
+  background-color: var(--primary-color) !important;
+  border: none !important;
+  padding: 0.5rem 1rem !important;
+  font-size: 0.9rem !important;
+}
+
+.quiz-detail-actions .p-button.p-button-success {
+  background-color: #22c55e !important;
+}
+
+.quiz-detail-actions .p-button.p-button-secondary {
+  background-color: #64748b !important;
+}
+
+
+.admin-filters {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.admin-filters .filter-input,
+.admin-filters .filter-select {
+  padding: 0.5rem;
+  font-size: 0.9rem;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background-color: white;
+}
+
+.admin-filters .p-button {
+  display: inline-flex;
+  opacity: 1 !important;
+  visibility: visible !important;
+  background-color: var(--primary-color) !important;
+  color: var(--text-on-primary) !important;
+  border: none !important;
+  padding: 0.5rem 1rem !important;
+  font-size: 0.9rem !important;
+  border-radius: 6px;
+}
+
+.admin-filters .p-button.p-button-secondary {
+  background-color: #64748b !important;
+}
+.p-dialog .p-button {
+  opacity: 1 !important;
+  visibility: visible !important;
+  background-color: var(--primary-color) !important;
+  color: var(--text-on-primary) !important;
+  border: none !important;
+  padding: 0.5rem 1.25rem !important;
+  font-size: 0.9rem;
+  border-radius: 6px;
+}
+
+.p-dialog .p-button.p-button-outlined {
+  background-color: transparent !important;
+  color: var(--primary-color) !important;
+  border: 1px solid var(--primary-color) !important;
+}
+
+.p-dialog .p-button.p-button-success {
+  background-color: #22c55e !important;
+}
+
+.p-dialog .p-button.p-button-secondary {
+  background-color: #64748b !important;
+}
+.p-dialog-footer {
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.dialog-confirm-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding: 0.5rem 1rem;
+}
+
+.dialog-confirm-footer .p-button {
+  min-width: 130px;
+  font-weight: 500;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.dialog-confirm-footer .p-button.p-button-outlined {
+  background-color: transparent;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+}
+
+.dialog-confirm-footer .p-button.p-button-outlined:hover {
+  background-color: #f4f4f4;
+}
+
+.dialog-confirm-footer .p-button.p-button-success {
+  background-color: #22c55e;
+  color: white;
+}
+
+.dialog-confirm-footer .p-button.p-button-success:hover {
+  background-color: #16a34a;
+}
+

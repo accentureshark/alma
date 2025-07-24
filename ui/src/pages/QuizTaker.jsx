@@ -295,11 +295,21 @@ const QuizTaker = () => {
             onHide={handleCloseModal}
             header="¡Quiz completado!"
             footer={
-              <CustomButton
-                  label="Volver al Dashboard"
-                  icon="pi pi-arrow-left"
-                  onClick={handleCloseModal}
-              />
+              <div className="dialog-confirm-footer">
+                <CustomButton
+                    label="Cancelar"
+                    icon="pi pi-times"
+                    severity="secondary"
+                    onClick={() => setShowConfirmation(false)}
+                    className="p-button-outlined"
+                />
+                <CustomButton
+                    label="Confirmar y enviar"
+                    icon="pi pi-check"
+                    severity="success"
+                    onClick={handleConfirmSubmit}
+                />
+              </div>
             }
             style={{ width: '60vw', minWidth: 400, maxWidth: 800 }}
             modal

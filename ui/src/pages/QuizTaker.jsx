@@ -5,6 +5,7 @@ import { Splitter, SplitterPanel } from 'primereact/splitter';
 import { Dialog } from 'primereact/dialog';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { Divider } from 'primereact/divider';
+import ReactMarkdown from 'react-markdown';
 import { Header } from '../components/layout/Header';
 import { CustomButton } from '../components/ui/CustomButton';
 import { TextareaField } from '../components/ui/TextareaField';
@@ -293,9 +294,9 @@ const QuizTaker = () => {
         <Dialog
             visible={showCompletionModal}
             onHide={handleCloseModal}
-            header="¡Quiz completado!"
+            header={<div style={{ padding: '1rem 1.5rem' }}>¡Quiz completado!</div>}
             footer={
-              <div className="dialog-confirm-footer">
+              <div className="dialog-confirm-footer" style={{ padding: '1rem' }}>
                 <CustomButton
                     label="Cancelar"
                     icon="pi pi-times"
@@ -314,32 +315,31 @@ const QuizTaker = () => {
             style={{ width: '60vw', minWidth: 400, maxWidth: 800 }}
             modal
         >
-          <div style={{ padding: "1rem" }}>
-            <p>¡Gracias por completar el quiz!</p>
+          <div style={{ padding: "1.5rem" }}>
+            <p style={{ marginBottom: '1rem' }}>¡Gracias por completar el quiz!</p>
             
             {showLlmResult && (
-              <div className="llm-response-section">
+              <div className="llm-response-section" style={{ marginTop: '1rem' }}>
                 <Divider />
-                <h4>Análisis de tus respuestas:</h4>
+                <h4 style={{ margin: '1rem 0' }}>Análisis de tus respuestas:</h4>
                 <div className="llm-response-content" style={{
                   background: '#f8f9fa',
-                  padding: '1rem',
+                  padding: '1.5rem',
                   borderRadius: '8px',
                   border: '1px solid #e9ecef',
-                  whiteSpace: 'pre-wrap',
                   fontFamily: 'inherit',
                   maxHeight: '400px',
                   overflowY: 'auto'
                 }}>
-                  {llmResponse}
+                  <ReactMarkdown>{llmResponse}</ReactMarkdown>
                 </div>
               </div>
             )}
             
             {isProcessingLlm && (
-              <div className="processing-section">
+              <div className="processing-section" style={{ marginTop: '1rem' }}>
                 <Divider />
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', padding: '1rem 0' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <i className="pi pi-spin pi-spinner" />
                     <span>Analizando tus respuestas...</span>
@@ -356,9 +356,9 @@ const QuizTaker = () => {
         <Dialog
             visible={showConfirmation}
             onHide={() => setShowConfirmation(false)}
-            header="Confirmar envío"
+            header={<div style={{ padding: '1rem 1.5rem' }}>Confirmar envío</div>}
             footer={
-              <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', padding: '0.5rem 0' }}>
+              <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', padding: '1rem' }}>
                 <CustomButton
                     label="Cancelar"
                     icon="pi pi-times"
@@ -378,7 +378,7 @@ const QuizTaker = () => {
             modal
             closable={true}
         >
-          <div style={{ padding: "1rem 0" }}>
+          <div style={{ padding: "1.5rem" }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', marginBottom: '1rem' }}>
               <i className="pi pi-question-circle" style={{ color: '#f59e0b', fontSize: '1.5rem', marginTop: '0.1rem' }} />
               <div>

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import ReactMarkdown from 'react-markdown';
 import { InputField } from '../ui/InputField';
 import { CustomButton } from '../ui/CustomButton';
 import { DataView } from 'primereact/dataview';
@@ -55,8 +56,14 @@ export const QuizResults = ({ quizzes }) => {
                 </details>
                 <details>
                     <summary>Ver resultado LLM</summary>
-                    <div className="result-llm">
-                        <p>{result.resultadoInferencia}</p>
+                    <div className="result-llm" style={{
+                        background: '#f8f9fa',
+                        padding: '1rem',
+                        borderRadius: '8px',
+                        border: '1px solid #e9ecef',
+                        marginTop: '0.5rem'
+                    }}>
+                        <ReactMarkdown>{result.resultadoInferencia}</ReactMarkdown>
                     </div>
                 </details>
             </div>

@@ -22,6 +22,14 @@ spring:
       schema-locations: classpath:schema.sql
       data-locations: classpath:data.sql
       continue-on-error: true
+  mail:
+    host: localhost
+    port: 1025
+    username: ""
+    password: ""
+
+app:
+  confirm-url: http://localhost:8082/api/auth/confirm?token=
 
 
 llm:

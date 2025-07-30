@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider } from './contexts/AuthContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import Login from './pages/Login';
+import Register from './pages/Register';
 import Home from './pages/Home';
 import QuizTaker from './pages/QuizTaker';
 import UserDashboard from './pages/UserDashboard';
@@ -20,6 +21,7 @@ function App() {
         <div className="App">
           <Routes>
             <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
             <Route 
               path="/home" 
               element={

@@ -1,10 +1,13 @@
 package org.shark.alma.adapter.in.rest;
 
 import org.shark.alma.application.service.UserService;
+import org.shark.alma.application.service.RegistrationService;
 import org.shark.alma.domain.model.user.LoginRequest;
 import org.shark.alma.domain.model.user.LoginResponse;
 import org.shark.alma.domain.model.user.User;
 import org.shark.alma.domain.model.user.UserDto;
+import org.shark.alma.domain.model.user.RegistrationRequest;
+import org.shark.alma.domain.model.user.GenericResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +25,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private RegistrationService registrationService;
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
@@ -59,6 +65,26 @@ public class UserController {
         } else {
             logger.warn("Usuario no encontrado: {}", email);
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<GenericResponse> register(@RequestBody RegistrationRequest request) {
+        try {
+            registrationService.register(request.getEmail(), request.getPassword());
+            return ResponseEntity.ok(new GenericResponse(true, "Registro iniciado. Revisa tu correo."));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new GenericResponse(false, e.getMessage()));
+        }
+    }
+
+    @GetMapping("/confirm")
+    public ResponseEntity<GenericResponse> confirm(@RequestParam String token) {
+        boolean ok = registrationService.confirm(token);
+        if (ok) {
+            return ResponseEntity.ok(new GenericResponse(true, "Usuario confirmado"));
+        } else {
+            return ResponseEntity.badRequest().body(new GenericResponse(false, "Token inválido"));
         }
     }
 }

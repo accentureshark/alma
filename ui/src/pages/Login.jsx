@@ -118,6 +118,9 @@ const Login = () => {
             <a href="#" className="forgot-password">
               ¿Olvidaste tu contraseña?
             </a>
+            <a href="/register" className="forgot-password">
+              Crear cuenta
+            </a>
           </div>
 
           {!showRoleButtons && (

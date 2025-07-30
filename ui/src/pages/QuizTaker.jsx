@@ -161,7 +161,13 @@ const QuizTaker = () => {
   };
 
   const handleExportPdf = () => {
-    window.print();
+    const newWindow = window.open('', '', 'width=800,height=600');
+    if (!newWindow) return;
+    newWindow.document.write(`<html><head><title>Resultado Quiz</title></head><body><pre style="white-space: pre-wrap; font-family: inherit;">${llmResponse}</pre></body></html>`);
+    newWindow.document.close();
+    newWindow.focus();
+    newWindow.print();
+    newWindow.close();
   };
 
   const handleGoBack = () => {

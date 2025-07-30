@@ -10,7 +10,7 @@ import { Header } from '../components/layout/Header';
 import { CustomButton } from '../components/ui/CustomButton';
 import { TextareaField } from '../components/ui/TextareaField';
 import { CustomCard } from '../components/ui/CustomCard';
-import { ProcessingTimer } from '../components/ui/ProcessingTimer';
+import { ProcessingOverlay } from '../components/ui/ProcessingOverlay';
 
 // Datos de ejemplo (pueden eliminarse si solo usas los del backend)
 const exampleQuizzes = [
@@ -160,6 +160,10 @@ const QuizTaker = () => {
     navigate('/user-dashboard');
   };
 
+  const handleExportPdf = () => {
+    window.print();
+  };
+
   const handleGoBack = () => {
     navigate('/user-dashboard');
   };
@@ -207,9 +211,6 @@ const QuizTaker = () => {
                   className="p-button-success"
                   disabled={!allQuestionsAnswered || isProcessingLlm}
               />
-              {isProcessingLlm && (
-                <ProcessingTimer isActive={isProcessingLlm} className="compact-timer" />
-              )}
             </div>
         )}
       </div>
@@ -217,6 +218,7 @@ const QuizTaker = () => {
 
   return (
       <div className="quiz-taker-page">
+        <ProcessingOverlay visible={isProcessingLlm} />
         <Header />
         <Splitter className="quiz-taker-splitter">
           <SplitterPanel className="navigation-panel" size={30}>
@@ -298,17 +300,16 @@ const QuizTaker = () => {
             footer={
               <div className="dialog-confirm-footer" style={{ padding: '1rem' }}>
                 <CustomButton
-                    label="Cancelar"
-                    icon="pi pi-times"
+                    label="Exportar como PDF"
+                    icon="pi pi-file-pdf"
                     severity="secondary"
-                    onClick={() => setShowConfirmation(false)}
-                    className="p-button-outlined"
+                    onClick={handleExportPdf}
                 />
                 <CustomButton
-                    label="Confirmar y enviar"
-                    icon="pi pi-check"
+                    label="Grabar"
+                    icon="pi pi-save"
                     severity="success"
-                    onClick={handleConfirmSubmit}
+                    onClick={handleCloseModal}
                 />
               </div>
             }
@@ -337,18 +338,9 @@ const QuizTaker = () => {
             )}
             
             {isProcessingLlm && (
-              <div className="processing-section" style={{ marginTop: '1rem' }}>
+              <div style={{ marginTop: '1rem', textAlign: 'center' }}>
                 <Divider />
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', padding: '1rem 0' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <i className="pi pi-spin pi-spinner" />
-                    <span>Analizando tus respuestas...</span>
-                  </div>
-                  <ProcessingTimer isActive={isProcessingLlm} />
-                  <div style={{ fontSize: '0.85rem', color: '#64748b', fontStyle: 'italic' }}>
-                    El análisis puede tardar varios segundos. Por favor, mantén la paciencia.
-                  </div>
-                </div>
+                <span>Analizando tus respuestas...</span>
               </div>
             )}
           </div>

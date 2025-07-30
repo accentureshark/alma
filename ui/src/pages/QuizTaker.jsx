@@ -311,12 +311,6 @@ const QuizTaker = () => {
                     severity="secondary"
                     onClick={handleExportPdf}
                 />
-                <CustomButton
-                    label="Grabar"
-                    icon="pi pi-save"
-                    severity="success"
-                    onClick={handleCloseModal}
-                />
               </div>
             }
             style={{ width: '60vw', minWidth: 400, maxWidth: 800 }}

@@ -118,9 +118,11 @@ export const QuizPanel = () => {
                 <DataView className="quiz-list" value={quizzes} itemTemplate={itemTemplate} />
               </CustomCard>
 
-              <CustomCard title="Detalles del Quiz" className="quiz-detail-card">
-                <QuizDetail quiz={selectedQuiz} onEdit={handleEditQuiz} user={user} />
-              </CustomCard>
+              {selectedQuiz && (
+                <CustomCard title="Detalles del Quiz" className="quiz-detail-card">
+                  <QuizDetail quiz={selectedQuiz} onEdit={handleEditQuiz} user={user} />
+                </CustomCard>
+              )}
             </div>
 
             <QuizModal

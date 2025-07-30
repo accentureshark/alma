@@ -22,6 +22,7 @@ export const QuizDetail = ({ quiz, onEdit }) => {
         <div className="quiz-detail-container">
             <div className="quiz-detail-header">
                 <h3>{quiz.tema}</h3>
+                <p className="quiz-id-label" title={quiz.tema}><strong>Id:</strong> {quiz.documentId}</p>
                 <div className="quiz-detail-actions">
                     <CustomButton
                         label="Editar"

@@ -100,6 +100,17 @@
     color: var(--text-on-primary);
 }
 
+/* Estilos para el id del quiz en el modal */
+.quiz-id-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1.25rem;
+    background: var(--primary-color);
+    border-radius: 12px;
+    color: var(--text-on-primary);
+}
+
 .modal-footer .p-button-primary {
     background-color: var(--primary-color);
     color: var(--text-on-primary);
@@ -191,11 +202,30 @@
     font-weight: 500;
 }
 
+.quiz-id-input.p-inputtext {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 8px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
 .quiz-title-input .p-inputtext::placeholder {
     color: rgba(255, 255, 255, 0.7);
 }
 
+.quiz-id-input .p-inputtext::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
 .quiz-title-input .p-inputtext:focus {
+    border-color: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.25);
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+.quiz-id-input .p-inputtext:focus {
     border-color: rgba(255, 255, 255, 0.8);
     box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.25);
     background-color: rgba(255, 255, 255, 0.15);

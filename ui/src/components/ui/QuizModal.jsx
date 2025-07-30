@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 export const QuizModal = ({ visible, onHide, onSave, editMode = false, initialData = null }) => {
     const [quizTitle, setQuizTitle] = useState("");
     const [quizPrompt, setQuizPrompt] = useState("");
+    const [quizId, setQuizId] = useState("");
     const [defaultPrompt, setDefaultPrompt] = useState("");
     const [questions, setQuestions] = useState([{ id: 1, value: "", options: [""], random: false }]);
     const MAX_QUESTIONS = 5;
@@ -30,6 +31,7 @@ export const QuizModal = ({ visible, onHide, onSave, editMode = false, initialDa
         if (editMode && initialData) {
             setQuizTitle(initialData.tema || "");
             setQuizPrompt(initialData.prompt || "");
+            setQuizId(initialData.documentId || "");
             
             if (initialData.steps && initialData.steps.length > 0) {
                 const formattedQuestions = initialData.steps.map((step, index) => ({
@@ -44,6 +46,7 @@ export const QuizModal = ({ visible, onHide, onSave, editMode = false, initialDa
             // Reset form for create mode
             setQuizTitle("");
             setQuizPrompt("");
+            setQuizId("");
             setQuestions([{ id: 1, value: "", options: [""], random: false }]);
         }
     }, [editMode, initialData, visible]);
@@ -117,6 +120,7 @@ export const QuizModal = ({ visible, onHide, onSave, editMode = false, initialDa
             // Only reset form when creating new quiz
             setQuizTitle("");
             setQuizPrompt("");
+            setQuizId("");
             setQuestions([{ id: 1, value: "", options: [""], random: false }]);
         }
         onHide();
@@ -137,9 +141,9 @@ export const QuizModal = ({ visible, onHide, onSave, editMode = false, initialDa
                 }))
         };
         
-        if (editMode && initialData) {
+        if (editMode) {
             // Include documentId for editing
-            quizData.documentId = initialData.documentId;
+            quizData.documentId = quizId;
         }
         
         onSave(quizData);
@@ -157,6 +161,23 @@ export const QuizModal = ({ visible, onHide, onSave, editMode = false, initialDa
             style={{ width: '50vw', minWidth: '400px', height: '700px' }}
         >
             <div className="quiz-content">
+                {/* Quiz Id (documentId) */}
+                {editMode && (
+                    <div className="quiz-id-section">
+                        <label htmlFor="quiz-id" className="quiz-id-label">
+                            <i className="pi pi-id-card" style={{ marginRight: '0.5rem' }}></i>
+                            Id
+                        </label>
+                        <InputField
+                            id="quiz-id"
+                            value={quizId}
+                            onChange={(e) => setQuizId(e.target.value)}
+                            placeholder="Id del quiz"
+                            className="quiz-id-input"
+                        />
+                    </div>
+                )}
+
                 {/* Título del Quiz */}
                 <div className="quiz-title-section">
                     <label htmlFor="quiz-title" className="quiz-title-label">

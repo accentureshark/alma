@@ -22,6 +22,7 @@ public class QuizDefinition {
     private String tema;
     private String version;
     private String prompt;
+    private String language;
 
     @Transient // O usa @ElementCollection si quieres persistir los steps
     private List<QuizStep> steps;

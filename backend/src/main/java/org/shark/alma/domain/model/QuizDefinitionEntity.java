@@ -35,6 +35,9 @@ public class QuizDefinitionEntity {
     @Column(name = "steps_json", columnDefinition = "TEXT", nullable = false)
     private String stepsJson;
 
+    @Column(name = "language", columnDefinition = "TEXT")
+    private String language;
+
     @Column(name = "created_at")
     private java.sql.Timestamp createdAt;
 }

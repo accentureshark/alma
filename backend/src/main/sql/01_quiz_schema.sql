@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS quiz.quiz_definition (
                                                     tema TEXT,
                                                     version TEXT,
                                                     prompt TEXT,
+                                                    language TEXT,
                                                     steps_json JSONB NOT NULL,
                                                     created_at TIMESTAMP DEFAULT now()
 );

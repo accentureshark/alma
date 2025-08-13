@@ -57,6 +57,7 @@ public class QuizService {
             entity.setTema(definition.getTema());
             entity.setVersion(definition.getVersion());
             entity.setPrompt(definition.getPrompt());
+            entity.setLanguage(definition.getLanguage());
             entity.setStepsJson(objectMapper.writeValueAsString(definition.getSteps()));
             entity.setCreatedAt(new java.sql.Timestamp(System.currentTimeMillis()));
             quizRepository.save(entity);
@@ -79,6 +80,7 @@ public class QuizService {
         def.setTema(entity.getTema());
         def.setVersion(entity.getVersion());
         def.setPrompt(entity.getPrompt());
+        def.setLanguage(entity.getLanguage());
         try {
             List<QuizDefinition.QuizStep> steps = objectMapper.readValue(
                     entity.getStepsJson(),
@@ -169,6 +171,7 @@ public class QuizService {
             entity.setTema(definition.getTema());
             entity.setVersion(definition.getVersion());
             entity.setPrompt(definition.getPrompt());
+            entity.setLanguage(definition.getLanguage());
             entity.setStepsJson(objectMapper.writeValueAsString(definition.getSteps()));
             entity.setCreatedAt(new java.sql.Timestamp(System.currentTimeMillis()));
 
